@@ -1,0 +1,5 @@
+{
+  "MH": { "act_name": "Maharashtra Right to Public Services Act, 2015", "appeal_final": "Maharashtra State Commission for Right to Public Services" },
+  "KA": { "act_name": "Karnataka Sakala Services Act, 2011", "appeal_final": null },
+  "_note": "appeal_final for KA is null on purpose: fill from the Act text before approving KA rules."
+}

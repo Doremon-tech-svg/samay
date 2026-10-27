@@ -1,0 +1,52 @@
+{
+  "_note": "Rules compiled from public notified-service lists. Every record must carry its source and be human-approved before the clock will run. day_type is NOT confirmed from the Act: verify (calendar vs working days) before the demo.",
+  "services": [
+    {
+      "id": "MH-income-certificate", "state_code": "MH", "service_key": "income-certificate",
+      "name": "Income Certificate", "department": "Revenue Services",
+      "act_name": "Maharashtra Right to Public Services Act, 2015",
+      "days": 15, "day_type": "calendar", "status": "approved",
+      "designated_officer": "Nayab Tahsildar", "appellate_1": "Tahsildar", "appellate_2": "Sub Divisional Officer",
+      "appeal_final": "Maharashtra State Commission for Right to Public Services",
+      "penalty_note": "Officer liable to penalty up to Rs 5,000 per case (as stated in district RTS pages).",
+      "source_doc": "Maharashtra RTS notified service list (district page, e.g. nanded.gov.in)",
+      "source_note": "Timeline and officers as listed; day type unverified", "verified_by": "team (re-check before demo)"
+    },
+    {
+      "id": "MH-agriculturist-certificate", "state_code": "MH", "service_key": "agriculturist-certificate",
+      "name": "Agriculturist Certificate", "department": "Revenue Services",
+      "act_name": "Maharashtra Right to Public Services Act, 2015",
+      "days": 7, "day_type": "calendar", "status": "approved",
+      "designated_officer": "Tahsildar", "appellate_1": "Sub Divisional Officer", "appellate_2": "Additional Collector",
+      "appeal_final": "Maharashtra State Commission for Right to Public Services",
+      "penalty_note": "Officer liable to penalty up to Rs 5,000 per case (as stated in district RTS pages).",
+      "source_doc": "Maharashtra RTS notified service list (district page, e.g. nanded.gov.in)",
+      "source_note": "Timeline and officers as listed; day type unverified", "verified_by": "team (re-check before demo)"
+    },
+    {
+      "id": "MH-landless-labour-certificate", "state_code": "MH", "service_key": "landless-labour-certificate",
+      "name": "Landless Labour Certificate", "department": "Revenue Services",
+      "act_name": "Maharashtra Right to Public Services Act, 2015",
+      "days": 15, "day_type": "calendar", "status": "approved",
+      "designated_officer": "Tahsildar", "appellate_1": "Sub Divisional Officer", "appellate_2": "Additional Collector",
+      "appeal_final": "Maharashtra State Commission for Right to Public Services",
+      "penalty_note": "Officer liable to penalty up to Rs 5,000 per case (as stated in district RTS pages).",
+      "source_doc": "Maharashtra RTS notified service list (district page, e.g. nanded.gov.in)",
+      "source_note": "Timeline and officers as listed; day type unverified", "verified_by": "team (re-check before demo)"
+    },
+    {
+      "id": "KA-DRAFT-example", "state_code": "KA", "service_key": "draft-example",
+      "name": "Karnataka service (DRAFT: compile from the Sakala compendium)", "department": null,
+      "act_name": "Karnataka Sakala Services Act, 2011",
+      "days": null, "day_type": "calendar", "status": "draft",
+      "designated_officer": null, "appellate_1": null, "appellate_2": null, "appeal_final": null,
+      "penalty_note": null, "source_doc": "Sakala service compendium (to fetch)", "source_note": "Not yet compiled. The clock refuses draft rules.", "verified_by": null
+    }
+  ],
+  "offices": [
+    { "id": "MH-demo-tahsil-a", "state_code": "MH", "district": "Demo District 1", "name": "Demo Tahsil Office A", "level": "tahsil" },
+    { "id": "MH-demo-tahsil-b", "state_code": "MH", "district": "Demo District 1", "name": "Demo Tahsil Office B", "level": "tahsil" },
+    { "id": "MH-demo-tahsil-c", "state_code": "MH", "district": "Demo District 2", "name": "Demo Tahsil Office C", "level": "tahsil" },
+    { "id": "KA-demo-taluk-a", "state_code": "KA", "district": "Demo District K1", "name": "Demo Taluk Office KA-A", "level": "taluk" }
+  ]
+}

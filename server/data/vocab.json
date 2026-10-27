@@ -1,0 +1,5 @@
+{
+  "_note": "Controlled vocabulary of authorities. An authority outside this list is flagged UNKNOWN_AUTHORITY (flag, not reject): a human decides. Extend per state from the notified lists.",
+  "MH": ["Nayab Tahsildar", "Tahsildar", "Sub Divisional Officer", "Additional Collector", "Collector", "Block Development Officer", "Chief Executive Officer"],
+  "KA": ["Tahsildar", "Assistant Commissioner", "Deputy Commissioner", "Revenue Inspector", "Village Accountant", "Divisional Commissioner"]
+}

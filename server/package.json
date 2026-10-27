@@ -1,0 +1,23 @@
+{
+  "name": "samay-server",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch src/index.js",
+    "start": "node src/index.js",
+    "db:init": "node db/init.js",
+    "test": "node --test \"src/**/*.test.js\"",
+    "smoke": "node db/smoke.js",
+    "dev:mem": "node db/devMem.js",
+    "eval:compiler": "node src/compiler/runEval.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "pg": "^8.12.0"
+  },
+  "devDependencies": {
+    "pg-mem": "^3.0.5"
+  }
+}
