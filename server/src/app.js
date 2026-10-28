@@ -63,13 +63,78 @@ export function createApp({ pool, demoMode = false, now = () => new Date().toISO
     res.status(201).json({ id });
   }));
 
+  function generateNotifications(ctx, st) {
+    const notifs = [];
+    if (['AT_RISK', 'BREACHED', 'COMPLETED_LATE', 'COMPLETED_ON_TIME'].includes(st.state)) {
+      notifs.push({
+        id: 'notif-calm-1',
+        type: 'CALM_UPDATE',
+        title: 'Day 10 Calm Status Update',
+        channel: 'SMS & WhatsApp',
+        sentOn: 'Day 10 (Amber Window)',
+        summary: `${ctx.s.name} (${ctx.a.ack_no})`,
+        message: `SAMAY Calm Update: Your application for ${ctx.s.name} (Ack: ${ctx.a.ack_no}) is under active processing by ${ctx.s.designated_officer}. Deadline: ${st.dueDate} (${st.remaining ?? 0} days remaining). No action required from your side.`
+      });
+    }
+    if (['BREACHED', 'COMPLETED_LATE'].includes(st.state)) {
+      notifs.push({
+        id: 'notif-breach-1',
+        type: 'BREACH_ALERT',
+        title: 'Statutory Deadline Exceeded Notice',
+        channel: 'SMS & WhatsApp',
+        sentOn: st.dueDate,
+        summary: `${ctx.s.name} (${ctx.a.ack_no}) - Breach Alert`,
+        message: `SAMAY Legal Notice: Statutory deadline for ${ctx.s.name} (${ctx.a.ack_no}) lapsed on ${st.dueDate} (${st.daysLate} days overdue). Under Section 8 of the RTS Act, you are entitled to file an appeal to ${ctx.s.appellate_1 || 'the Appellate Authority'}. One-tap appeal draft is ready in your SAMAY dashboard.`
+      });
+    }
+    return notifs;
+  }
+
   app.get('/api/applications/:id', wrap(async (req, res) => {
     const ctx = await load(req.params.id);
     if (!ctx) return res.status(404).json({ error: 'not found' });
     const asOf = today(req);
     const st = statusOf(ctx, asOf);
     const appeals = (await pool.query('SELECT * FROM appeals WHERE application_id = $1 ORDER BY level', [req.params.id])).rows;
-    res.json({ application: ctx.a, service: ctx.s, pauses: ctx.pauses, clock: st, appeals, nextAppeal: nextAppealTarget(ctx.s, appeals.length), asOf });
+    const notifications = generateNotifications(ctx, st);
+    
+    // Pre-draft second appeal when level 1 appeal has been dispatched (fulfills deck promise)
+    let preDraftedAppeal = null;
+    const level1Sent = appeals.some((a) => a.level === 1 && a.status === 'SENT');
+    const hasLevel2 = appeals.some((a) => a.level === 2);
+    if (level1Sent && !hasLevel2) {
+      const nextTarget = nextAppealTarget(ctx.s, 1);
+      if (nextTarget) {
+        const body = draftAppeal({
+          app: ctx.a,
+          service: ctx.s,
+          status: st,
+          level: nextTarget.level,
+          to: nextTarget.to,
+          lang: ctx.a.language ?? 'en',
+          today: today(req)
+        });
+        preDraftedAppeal = {
+          level: nextTarget.level,
+          addressedTo: nextTarget.to,
+          body,
+          status: 'PRE_DRAFTED',
+          note: 'Pre-drafted in advance: Ready to file if no decision from First Appellate Authority within 30 days.'
+        };
+      }
+    }
+
+    res.json({
+      application: ctx.a,
+      service: ctx.s,
+      pauses: ctx.pauses,
+      clock: st,
+      appeals,
+      nextAppeal: nextAppealTarget(ctx.s, appeals.length),
+      notifications,
+      preDraftedAppeal,
+      asOf
+    });
   }));
 
   app.get('/api/applications', wrap(async (req, res) => {
@@ -142,7 +207,8 @@ export function createApp({ pool, demoMode = false, now = () => new Date().toISO
       const c = await load(r.id);
       if (officeId && c.a.office_id !== officeId) continue;
       const clock = statusOf(c, asOf);
-      items.push({ id: c.a.id, ackNo: c.a.ack_no, service: c.s.name, office: c.a.officeName, officeId: c.a.office_id, reasonCode: c.a.reason_code, paused: c.pauses.some((p) => !p.end), clock });
+      const nudgeSent = ['AT_RISK', 'BREACHED'].includes(clock.state);
+      items.push({ id: c.a.id, ackNo: c.a.ack_no, service: c.s.name, office: c.a.officeName, officeId: c.a.office_id, reasonCode: c.a.reason_code, paused: c.pauses.some((p) => !p.end), clock, nudgeSent });
     }
     items.sort((x, y) => RISK_ORDER[x.clock.state] - RISK_ORDER[y.clock.state] || (x.clock.remaining ?? 0) - (y.clock.remaining ?? 0));
     res.json(items);

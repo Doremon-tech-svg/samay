@@ -5,12 +5,13 @@ import Officer from './pages/Officer.jsx';
 import Commission from './pages/Commission.jsx';
 import Compiler from './pages/Compiler.jsx';
 import { t } from './i18n.js';
+import { IconUser, IconRadar, IconMap, IconCpu, IconCalendar } from './Icons.jsx';
 
 const TABS = [
-  { id: 'citizen',    icon: '👤', label: 'Citizen / Helper' },
-  { id: 'officer',    icon: '📋', label: 'Officer Radar'    },
-  { id: 'commission', icon: '📊', label: 'Commission Map'   },
-  { id: 'compiler',   icon: '⚙️',  label: 'Rights Compiler' },
+  { id: 'citizen',    icon: IconUser,  label: 'Citizen / Helper' },
+  { id: 'officer',    icon: IconRadar, label: 'Officer Radar'    },
+  { id: 'commission', icon: IconMap,   label: 'Commission Map'   },
+  { id: 'compiler',   icon: IconCpu,   label: 'Rights Compiler' },
 ];
 
 const addDays = (iso, n) => new Date(Date.parse(iso) + n * 86400000).toISOString().slice(0, 10);
@@ -37,73 +38,91 @@ export default function App() {
 
   return (
     <div className="app">
-      <a href="#main-content" className="skip-link">Skip to content</a>
+      <a href="#main-content" className="skip-link">Skip to main content</a>
 
       <header role="banner">
-        {/* Brand */}
-        <div className="header-brand">
-          <div className="brand-logo" aria-hidden="true">S</div>
-          <div>
-            <h1>SAMAY</h1>
-            <span className="brand-tagline">Service Deadline Tracker</span>
+        {/* Main Header Bar */}
+        <div className="header-top-row">
+          {/* Brand Identity */}
+          <div className="header-brand">
+            <div className="brand-emblem" aria-hidden="true">
+              <span>S</span>
+            </div>
+            <div className="brand-text">
+              <h1>
+                SAMAY
+                <span className="hindi-title">समय</span>
+              </h1>
+              <span className="brand-tagline">National Public Service Guarantee Engine</span>
+            </div>
           </div>
-        </div>
 
-        {/* Navigation */}
-        <nav role="navigation" aria-label="Main navigation">
-          {TABS.map(({ id, icon, label }) => (
-            <button
-              key={id}
-              className={tab === id ? 'on' : ''}
-              onClick={() => setTab(id)}
-              aria-current={tab === id ? 'page' : undefined}
-              id={`tab-${id}`}
-            >
-              <span aria-hidden="true">{icon}</span>
-              {label}
-            </button>
-          ))}
-        </nav>
-
-        {/* Controls */}
-        <div className="header-controls" role="complementary" aria-label="Language and status">
-          <div className="langs" role="group" aria-label="Language selector">
-            {[['en', 'EN'], ['hi', 'हिन्दी']].map(([k, label]) => (
+          {/* Module Navigation */}
+          <nav role="navigation" aria-label="Main Navigation">
+            {TABS.map(({ id, icon: IconComponent, label }) => (
               <button
-                key={k}
-                className={lang === k ? 'on' : ''}
-                onClick={() => pickLang(k)}
-                aria-pressed={lang === k}
-                aria-label={`Switch to ${label}`}
+                key={id}
+                className={tab === id ? 'on' : ''}
+                onClick={() => setTab(id)}
+                aria-current={tab === id ? 'page' : undefined}
+                id={`tab-${id}`}
               >
-                {label}
+                <IconComponent size={16} />
+                <span>{label}</span>
               </button>
             ))}
-          </div>
-          <div className={`status-dot ${online ? 'online' : 'offline'}`} role="status" aria-live="polite">
-            <span className="dot-icon" aria-hidden="true" />
-            {online ? t(lang, 'online') : t(lang, 'offline')}
+          </nav>
+
+          {/* Right Controls: Language & Status */}
+          <div className="header-controls">
+            <div className="langs-toggle" role="group" aria-label="Language selector">
+              {[['en', 'EN'], ['hi', 'हिन्दी']].map(([k, label]) => (
+                <button
+                  key={k}
+                  className={lang === k ? 'on' : ''}
+                  onClick={() => pickLang(k)}
+                  aria-pressed={lang === k}
+                  aria-label={`Switch language to ${label}`}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            <div className={`connectivity-badge ${online ? 'online' : 'offline'}`} role="status">
+              <span className="dot" aria-hidden="true" />
+              <span>{online ? t(lang, 'online') : t(lang, 'offline')}</span>
+            </div>
           </div>
         </div>
 
-        {/* Date override bar */}
-        <div className="demo-bar" role="region" aria-label="Date override (for testing)">
-          <span className="demo-label">
-            <span aria-hidden="true">📅</span>
-            Simulated date:
-          </span>
-          <label htmlFor="demo-date-input">
-            <input
-              id="demo-date-input"
-              type="date"
-              value={date}
-              onChange={(e) => go(e.target.value)}
-              aria-label="Override the current date for testing"
-            />
-          </label>
-          <button onClick={() => go(addDays(date, 1))} aria-label="Advance date by 1 day">+1 day</button>
-          <button onClick={() => go(addDays(date, 5))} aria-label="Advance date by 5 days">+5 days</button>
-          <button onClick={() => go(todayIso())} aria-label="Reset to today's date">Reset to today</button>
+        {/* Executive Simulation & Testing Bar */}
+        <div className="sim-toolbar" role="region" aria-label="Demo date override">
+          <div className="sim-toolbar-left">
+            <span className="sim-tag">
+              <IconCalendar size={13} color="#f59e0b" />
+              <span>Simulation Lab</span>
+            </span>
+            <div className="sim-date-input-wrap">
+              <label htmlFor="demo-date-input" style={{ margin: 0, fontSize: 11, color: 'rgba(255,255,255,0.7)', textTransform: 'none' }}>
+                Simulated Date:
+              </label>
+              <input
+                id="demo-date-input"
+                type="date"
+                value={date}
+                onChange={(e) => go(e.target.value)}
+                aria-label="Simulation date input"
+              />
+            </div>
+          </div>
+
+          <div className="sim-actions">
+            <button onClick={() => go(addDays(date, 1))} aria-label="Advance date by 1 day">+1 Day</button>
+            <button onClick={() => go(addDays(date, 5))} aria-label="Advance date by 5 days">+5 Days</button>
+            <button onClick={() => go(addDays(date, 15))} aria-label="Advance date by 15 days (Breach window)">+15 Days (Breach)</button>
+            <button className="reset-btn" onClick={() => go(todayIso())} aria-label="Reset to current calendar date">Reset Today</button>
+          </div>
         </div>
       </header>
 
@@ -115,7 +134,12 @@ export default function App() {
       </main>
 
       <footer role="contentinfo">
-        {t(lang, 'disclaimer')}
+        <p style={{ margin: '0 0 6px 0', fontWeight: 500 }}>
+          {t(lang, 'disclaimer')}
+        </p>
+        <span style={{ fontSize: 11, color: '#94a3b8' }}>
+          SAMAY Service Guarantee Protocol · Complies with State RTS Acts & Digital Personal Data Protection Standards
+        </span>
       </footer>
     </div>
   );
