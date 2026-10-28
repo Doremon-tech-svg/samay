@@ -1,6 +1,6 @@
 # SAMAY: progress log
 
-Last updated: 27 Oct 2026. Team: Gryffindor (Divyank Richhariya, Deepika Kumari, Anushka Yadav, Athar Yadav).
+Last updated: 28 Oct 2026. Team: Gryffindor (Divyank Richhariya, Deepika Kumari, Anushka Yadav, Athar Yadav).
 Event: Build for Bharat 2026, Track 1 Software, PS 3 Open Innovation.
 
 This file has four parts: **A. what we did** (in order, with reasons), **B. verification status** of every fact and test,
@@ -61,6 +61,15 @@ React (Vite) app with four tabs: Citizen/Helper (slip to clock, ring, rights pan
 
 ### Phase 7: documentation
 `README.md` (this repo's full guide and setup), `PROGRESS.md` (this file), `BUILD_PLAN.md` (team workflow, timeline, demo script).
+
+### Phase 8: executive redesign & core gap closure (28 Oct 2026)
+- **Executive Civic-Tech Design System**: Completely replaced AI-generated template aesthetic with a high-trust national civic-tech interface inspired by India Stack and GDS standards. Hand-crafted vector icon set (`Icons.jsx`), elimination of double-emojis, Swiss-chronometer style circular progress gauge with status glows, and clean step hierarchy.
+- **Notification Outbox (P1-1)**: Day-10 calm updates and statutory breach alerts automatically generated and previewed as official SMS/WhatsApp alerts. Day-10 nudge indicator added to Officer Radar.
+- **Pre-generated Second Appeal (P1-2)**: Level-2 appeal drafted in advance upon Level-1 dispatch, fulfilling the pitch deck commitment.
+- **Commission Accountability Enhancements (P1-6)**: Interactive compliance heat grid tiles with $k$-anonymity privacy shield, systemic bottleneck attribution chart, and 1-click CSV report export.
+- **Full Hindi Service Name Localization (P1-10)**: Hindi service titles mapped and dynamically shown in Hindi mode.
+- **PostgreSQL 16 & Containerized Database (P0-8)**: Docker PostgreSQL verified and seeded with synthetic applications.
+- **Demo Mode Enabled**: `DEMO_MODE=1` active in `.env` to enable full time-travel simulation across all endpoints.
 
 ---
 
