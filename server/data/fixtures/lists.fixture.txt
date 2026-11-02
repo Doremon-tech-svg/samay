@@ -1,0 +1,8 @@
+FIXTURE notified-service list (pipe table). Rows 1-3 mirror the Maharashtra district list. Rows 4-6 are FICTIONAL test rows.
+Service | Days | Designated Officer | First Appellate | Second Appellate
+Income Certificate | 15 | Nayab Tahsildar | Tahsildar | Sub Divisional Officer
+Agriculturist Certificate | 7 | Tahsildar | Sub Divisional Officer | Additional Collector
+Landless Labour Certificate | 15 | Tahsildar | Sub Divisional Officer | Additional Collector
+Demo Service A (fixture) | 21 | Block Development Officer | Sub Divisional Officer | Collector
+Demo Service B (fixture) | thirty | Tahsildar | Sub Divisional Officer | Collector
+Demo Service C (fixture) | 10 | Section Officer | Under Secretary | Joint Secretary

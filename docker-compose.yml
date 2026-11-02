@@ -1,0 +1,7 @@
+services:
+  db:
+    image: postgres:16
+    environment: { POSTGRES_USER: samay, POSTGRES_PASSWORD: samay, POSTGRES_DB: samay }
+    ports: ["5432:5432"]
+    volumes: ["samay_pg:/var/lib/postgresql/data"]
+volumes: { samay_pg: {} }

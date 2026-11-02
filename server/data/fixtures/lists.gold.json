@@ -1,0 +1,11 @@
+{
+  "_note": "Hand-labelled gold for lists.fixture.txt. For the real accuracy number, the team labels 30-50 services from real public lists and drops them here.",
+  "rows": [
+    { "name": "Income Certificate", "days": 15, "designated_officer": "Nayab Tahsildar", "appellate_1": "Tahsildar", "appellate_2": "Sub Divisional Officer" },
+    { "name": "Agriculturist Certificate", "days": 7, "designated_officer": "Tahsildar", "appellate_1": "Sub Divisional Officer", "appellate_2": "Additional Collector" },
+    { "name": "Landless Labour Certificate", "days": 15, "designated_officer": "Tahsildar", "appellate_1": "Sub Divisional Officer", "appellate_2": "Additional Collector" },
+    { "name": "Demo Service A (fixture)", "days": 21, "designated_officer": "Block Development Officer", "appellate_1": "Sub Divisional Officer", "appellate_2": "Collector" },
+    { "name": "Demo Service B (fixture)", "days": 30, "designated_officer": "Tahsildar", "appellate_1": "Sub Divisional Officer", "appellate_2": "Collector" },
+    { "name": "Demo Service C (fixture)", "days": 10, "designated_officer": "Section Officer", "appellate_1": "Under Secretary", "appellate_2": "Joint Secretary" }
+  ]
+}

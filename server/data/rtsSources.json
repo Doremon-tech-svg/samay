@@ -1,0 +1,1039 @@
+{
+  "_note": "Source metadata only. This catalog does not create or approve service rows. Coverage, deadlines, and authorities are preserved as evidence notes; unknowns are intentional.",
+  "inventory_source": "samay-rts-source-inventory.md",
+  "jurisdiction_count": 36,
+  "jurisdictions": [
+    {
+      "jurisdiction": "Andhra Pradesh",
+      "primary_source_url": "https://www.apindustries.gov.in/APIndus/Data/AP_Delivery_Guarantee_Act_2017.PDF",
+      "sources": [
+        {
+          "title": "Industries Department Act PDF",
+          "url": "https://www.apindustries.gov.in/APIndus/Data/AP_Delivery_Guarantee_Act_2017.PDF"
+        },
+        {
+          "title": "Rules PDF",
+          "url": "https://apindustries.gov.in/apindus/Data/APPSDGA_Rules.pdf"
+        },
+        {
+          "title": "e-Gazette amendment viewer",
+          "url": "https://apegazette.cgg.gov.in/uploadGazette_view?filePath=eyJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2FwZWdhemV0dGUuY2dnLmdvdi5pbi9zZWFyY2hBbGxHYXpldHRlcyIsImlhdCI6MTc0NTQ5MTY2Nywic3ViIjoiL1VwbG9hZHMvQVBHQVpFVFRFL2dhemV0ZXMvMTc0MzY4Mzc4NDU2Ni5wZGYifQ.YVPV4WcuyCdrWoMzNQ5ZKFNc136xi3z8PWS4zCVQZQ8"
+        }
+      ],
+      "source_description": "Industries Department Act PDF, purported *Andhra Pradesh Public Services Delivery Guarantee Act, 2017*. Also attempted Rules PDF and e-Gazette amendment viewer.",
+      "apparent_coverage": "Not ascertainable from verified contents. An indexed Act title/provision and indexed 2025 Rules amendment title do not verify a service list or count.",
+      "deadline_semantics": "Unknown: time units, clock start, service or appeal deadlines, and deemed approval were not ascertainable from readable official text.",
+      "authority_availability": "Unknown from readable content; no officer or appeal roster verified.",
+      "access_problems": "Fetch returned no extracted content for Act, Rules, and Gazette viewer; direct PDF retrieval failed with TLS/connection errors. Search snippets were not used as evidence.",
+      "confidence": "High confidence in access limitation and withholding claims; low substantive confidence.",
+      "service_rows": []
+    },
+    {
+      "jurisdiction": "Arunachal Pradesh",
+      "primary_source_url": "https://www.law.arunachal.gov.in/api/content/download/1789716092937-07a5ea3f557400ff4a2ee9a89cf343bf.pdf",
+      "sources": [
+        {
+          "title": "2017 Rules Gazette PDF",
+          "url": "https://www.law.arunachal.gov.in/api/content/download/1789716092937-07a5ea3f557400ff4a2ee9a89cf343bf.pdf"
+        },
+        {
+          "title": "eServices directory",
+          "url": "https://eservice.arunachal.gov.in/resources/homePage/12/services.html"
+        }
+      ],
+      "source_description": "2017 Rules Gazette PDF; eServices directory.",
+      "apparent_coverage": "Schedule serials appear to run through 27; this is the 2017 Rules schedule, not a verified current total. eServices is a shorter online directory, not the full schedule.",
+      "deadline_semantics": "Rules exclude public holidays in computing stipulated time and reckon the next immediate working day; complete-application receipt is tied to acknowledgement/due date. Service-specific limits are in days or months. Appeal and compensatory-cost procedures exist; no deemed approval identified.",
+      "authority_availability": "Yes: schedule has designated-officer and first/second appellate-authority columns. OCR/table alignment makes individual row assignment unsafe without page-level visual checking.",
+      "access_problems": "Official PDF is scanned/OCR-derived and multi-column, with interleaved values. eServices page is not the full schedule.",
+      "confidence": "High for Rules structure and holiday rule; moderate for apparent 27; low for unverified individual row mappings.",
+      "service_rows": []
+    },
+    {
+      "jurisdiction": "Assam",
+      "primary_source_url": "https://art.assam.gov.in/portlet-innerpage/artps-list-of-notified-public-services",
+      "sources": [
+        {
+          "title": "ART notified-services page",
+          "url": "https://art.assam.gov.in/portlet-innerpage/artps-list-of-notified-public-services"
+        },
+        {
+          "title": "61-page list PDF",
+          "url": "https://art.assam.gov.in/sites/default/files/swf_utility_folder/departments/anrt_webcomindia_org_oid_3/portlet/level_2/department_wise_list_of_notified_artps_services.pdf"
+        },
+        {
+          "title": "Act overview",
+          "url": "https://art.assam.gov.in/frontimpotentdata/assam-right-to-public-service-act-2012"
+        }
+      ],
+      "source_description": "ART notified-services page; 61-page list PDF; Act overview.",
+      "apparent_coverage": "Page labels downloadable list “475 Public Services (470+5) Services,” last updated 04-07-2022. A separate Act overview says 55 services/14 departments; separate Sixth Schedule district lists exist. Do not reconcile these as one current total.",
+      "deadline_semantics": "PDF provides stipulated timelines. No universal calendar/working-day rule or clock start verified; individual examples state triggers and sometimes working days. Act overview gives appeal/penalty framework; no deemed approval established.",
+      "authority_availability": "Yes: PDF columns for Designated Public Servant and Appellate Authority; some entries visible, but blanks occur and row completeness is unverified. Act overview describes first and second appeal.",
+      "access_problems": "HTML table has blanks/inconsistencies; PDF extraction was truncated on first request and only targeted portions inspected; separate RTPS-hosted PDF was unreadable.",
+      "confidence": "High that official page labels 475 and the list has authority/timeline columns; medium for current completeness and semantics; low for unreviewed rows.",
+      "service_rows": []
+    },
+    {
+      "jurisdiction": "Bihar",
+      "primary_source_url": "https://bipard.bihar.gov.in/static/media/ACT.eac43e0a1b6572a7c35d.pdf",
+      "sources": [
+        {
+          "title": "Bihar RTPS Act PDF",
+          "url": "https://bipard.bihar.gov.in/static/media/ACT.eac43e0a1b6572a7c35d.pdf"
+        },
+        {
+          "title": "RTPS portal",
+          "url": "https://rtps.bihar.gov.in/rtps/"
+        },
+        {
+          "title": "first-appeal form",
+          "url": "https://rtpsappeal.bihar.gov.in/firstAppealAppForm"
+        },
+        {
+          "title": "GAD",
+          "url": "https://state.bihar.gov.in/gad/"
+        },
+        {
+          "title": "ServiceOnline",
+          "url": "https://serviceonline.bihar.gov.in/"
+        }
+      ],
+      "source_description": "Bihar RTPS Act PDF; RTPS portal; first-appeal form; GAD; ServiceOnline.",
+      "apparent_coverage": "Act establishes statewide framework and notification mechanism, not a list or count. No consolidated current schedule verified.",
+      "deadline_semantics": "Each notified service has its own limit. Unless notification says otherwise, clock starts upon submission to Designated Public Servant/authorized receiving subordinate; acknowledgement is contemplated. First appeal within 30 days after rejection or expiry; second within 60 days of first-appeal order. Act does not define service-day convention; no deemed approval found.",
+      "authority_availability": "Act authorizes notification of Designated Public Servants, Appellate and Reviewing Authorities. Appeal form asks for service/DPS details but is not an authority roster.",
+      "access_problems": "RTPS landing page redirects certificate services to ServiceOnline; GAD exposes no schedule; Act initially extracted as encoded payload, then direct download and local text extraction succeeded.",
+      "confidence": "High for Act framework; low for current service list/count/officer roster.",
+      "service_rows": []
+    },
+    {
+      "jurisdiction": "Chhattisgarh",
+      "primary_source_url": "https://prd.cg.gov.in/Lsgyojna.aspx",
+      "sources": [
+        {
+          "title": "Panchayat & Rural Development table",
+          "url": "https://prd.cg.gov.in/Lsgyojna.aspx"
+        },
+        {
+          "title": "Good Governance LSG page",
+          "url": "https://goodgovernance.cgstate.gov.in/en/lsg-services"
+        },
+        {
+          "title": "Hindi page",
+          "url": "https://goodgovernance.cgstate.gov.in/hi/lsg-services"
+        },
+        {
+          "title": "general services",
+          "url": "https://goodgovernance.cgstate.gov.in/en/services"
+        },
+        {
+          "title": "Revenue PDF",
+          "url": "https://revenue.cg.nic.in/revcase/%E0%A4%B2%E0%A5%8B%E0%A4%95%E0%A4%B8%E0%A5%87%E0%A4%B5%E0%A4%BE%20%E0%A4%97%E0%A4%BE%E0%A4%B0%E0%A4%82%E0%A4%9F%E0%A4%95%E0%A4%BE%E0%A4%B0%E0%A4%82%E0%A4%9F%E0%A5%80%20%E0%A4%85%E0%A4%A7%E0%A4%BF%E0%A4%A8%E0%A4%BF%E0%A4%AF%E0%A4%AE.pdf"
+        }
+      ],
+      "source_description": "Panchayat & Rural Development table; Good Governance LSG page; Hindi page; general services; Revenue PDF.",
+      "apparent_coverage": "Exactly eight numbered entries on the opened Panchayat department page; Panchayat/Gram Panchayat coverage only, not statewide total.",
+      "deadline_semantics": "Column says working days for rows 1–4 and 7–8; rows 5–6 say “30 days” without unit convention. Clock start, deemed approval, and appeal deadlines not stated on table.",
+      "authority_availability": "Yes: rows list relevant Gram Panchayat secretary (one also birth/death registrar), Sub-Divisional Officer as competent authority, Collector as appellate authority. No individual names.",
+      "access_problems": "State Good Governance pages rendered empty tables; Revenue PDF extraction was unreadable encoded data.",
+      "confidence": "High for eight department rows and displayed fields; low for statewide inventory and general statutory semantics.",
+      "service_rows": []
+    },
+    {
+      "jurisdiction": "Goa",
+      "primary_source_url": "https://dpg.goa.gov.in/time-bound-services/search/",
+      "sources": [
+        {
+          "title": "Service Directory",
+          "url": "https://dpg.goa.gov.in/time-bound-services/search/"
+        },
+        {
+          "title": "overview",
+          "url": "https://dpg.goa.gov.in/time-bound-services/"
+        },
+        {
+          "title": "circulars",
+          "url": "https://dpg.goa.gov.in/documents/circulars/"
+        },
+        {
+          "title": "South Goa Act listing",
+          "url": "https://southgoa.nic.in/document/the-goa-right-of-citizen-to-time-bound-delivery-of-public-services-act-2013/"
+        },
+        {
+          "title": "notification PDF",
+          "url": "https://dpg.goa.gov.in/documents/notifications-time-bound-delivery-act-2013.pdf"
+        },
+        {
+          "title": "amendment PDF",
+          "url": "https://www.goa.gov.in/wp-content/uploads/2016/05/The-Goa-Right-of-Citizen-Amendment-2013.pdf"
+        }
+      ],
+      "source_description": "Service Directory; overview; circulars; South Goa Act listing; notification PDF; amendment PDF. Interactive official directory under Directorate of Public Grievances.",
+      "apparent_coverage": "Directory displays 755 services across department filters; an apparent directory count, not reconciled legal-notification total.",
+      "deadline_semantics": "“Time Limit” field present; no universal unit/clock start established. Individual rows may state triggers. No deemed approval verified.",
+      "authority_availability": "Yes: displayed rows contain Designated Officer and Appellate Authority fields, populated in examples.",
+      "access_problems": "Directory rendered and inspected; underlying Act/notification PDFs could not be text-verified.",
+      "confidence": "High for displayed directory/count/fields; moderate for its current legal completeness; low for universal semantics.",
+      "service_rows": []
+    },
+    {
+      "jurisdiction": "Gujarat",
+      "primary_source_url": "https://artd.gujarat.gov.in/rcps-act",
+      "sources": [
+        {
+          "title": "GAD/ARTD index",
+          "url": "https://artd.gujarat.gov.in/rcps-act"
+        },
+        {
+          "title": "Act overview",
+          "url": "https://artd.gujarat.gov.in/public-service-act.htm"
+        },
+        {
+          "title": "official Gazette Act",
+          "url": "https://artd.gujarat.gov.in/images/pdf/Gazette-15-04-13-ENGLISH-RCPS-ACT-05042016.pdf"
+        },
+        {
+          "title": "2021 RCPS list",
+          "url": "https://gad.gujarat.gov.in/Personnel/images/pdf/RCPS-List-15022021.pdf"
+        },
+        {
+          "title": "IFP list",
+          "url": "https://ifp.gujarat.gov.in/IC/StaticAttachment?AttachmentFileName=/pdf/one_stop_info/RCPS_Services.pdf"
+        }
+      ],
+      "source_description": "GAD/ARTD index; Act overview; official Gazette Act; 2021 RCPS list; IFP list.",
+      "apparent_coverage": "Index links Act, rules, notifications, State Appellate Authority and dated 15-02-2021 list; list content unreadable, so no count/coverage verified.",
+      "deadline_semantics": "Act defines “days” as working days. Individual service limits are set by notification. Complaint acknowledgement within 3 working days; appeal periods 30 days after expiry/decision, further appeal within 30 days. No service clock start or service deemed-approval verified.",
+      "authority_availability": "Statute requires published Designated Officer names/addresses and Grievance Redressal Officers; index links authority/list materials, but a readable comprehensive roster was not verified.",
+      "access_problems": "2021 list PDF is scanned (“Scanned by CamScanner”); IFP attachment unreadable. Gazette Act readable.",
+      "confidence": "High for Act and working-day/appeal provisions; low-to-moderate for service inventory and actual roster.",
+      "service_rows": []
+    },
+    {
+      "jurisdiction": "Haryana",
+      "primary_source_url": "http://haryana-rtsc.gov.in/notify-serviceslist",
+      "sources": [
+        {
+          "title": "RTS Commission notified-services table",
+          "url": "http://haryana-rtsc.gov.in/notify-serviceslist"
+        },
+        {
+          "title": "Commission home",
+          "url": "http://haryana-rtsc.gov.in/"
+        },
+        {
+          "title": "Panipat district Act summary",
+          "url": "https://panipat.gov.in/the-haryana-right-to-servicerts-act-2014/"
+        }
+      ],
+      "source_description": "RTS Commission notified-services table; Commission home; Panipat district Act summary.",
+      "apparent_coverage": "Table states 811 entries, pagination to 82, spanning departments/agencies; displayed portal count, not audited legal total.",
+      "deadline_semantics": "Table has service-specific “In Days/Hours” limits; no day convention. Panipat summary says clock starts on receipt of complete application, acknowledged; no blanket deemed approval verified.",
+      "authority_availability": "Yes: designated officer and first/second grievance redressal authority columns; row values exist but no completeness audit.",
+      "access_problems": "Long table initially truncated; rendered full table inspected. Individual notification links not opened; Commission URL is HTTP.",
+      "confidence": "High for displayed table/count/fields and clock-start summary; moderate for completeness/current legal currency.",
+      "service_rows": []
+    },
+    {
+      "jurisdiction": "Himachal Pradesh",
+      "primary_source_url": "https://himachal.nic.in/ControlsAsync/ViewFTPFile?qs=KI3gZ53zz1wRNjts5nNiv3H%2BzqEjIN7ornYJLlN0Buez4kZ8c5dr8cSkpBoqgBwA2VXmzFLkcWRnHWKxgEs%2BDQHbRMQDdj6Y",
+      "sources": [
+        {
+          "title": "Department-wise summary PDF",
+          "url": "https://himachal.nic.in/ControlsAsync/ViewFTPFile?qs=KI3gZ53zz1wRNjts5nNiv3H%2BzqEjIN7ornYJLlN0Buez4kZ8c5dr8cSkpBoqgBwA2VXmzFLkcWRnHWKxgEs%2BDQHbRMQDdj6Y"
+        },
+        {
+          "title": "second official PDF",
+          "url": "https://himachal.nic.in/ControlsAsync/ViewFTPFile?qs=KI3gZ53zz1wRNjts5nNiv3H%2BzqEjIN7ornYJLlN0BuevFjEb1A1LeY5lMgdt%2FQBLCICumJvuLqb9ym2JPH8rmbMdOBWTiTLJ"
+        },
+        {
+          "title": "DMS Act PDF",
+          "url": "https://dms.hp.gov.in/ViewPDF.aspx?fn=WE5APY5%2BEhDA0UoobpgSA7ds6hCgjg%2FdgS3eDTJoVWm4Q1jpFd0UYu5b7hiIW9xP&ot=2LiD6ggCMIp9mzvYCQJmrg%3D%3D"
+        },
+        {
+          "title": "Rules PDF",
+          "url": "https://dms.hp.gov.in/ViewPDF.aspx?fn=YQ7noq%2B8MOmsfiH9fl9JIh5Lhk6U2ryHSMaZtkoAX5p8e1cfSd79PcQ3slxlC8FT&ot=2LiD6ggCMIp9mzvYCQJmrg%3D%3D"
+        },
+        {
+          "title": "Shimla notice",
+          "url": "https://hpshimla.nic.in/notice/notice-regarding-services-notified-under-himachal-pradesh-public-service-guarantee-act-2011/"
+        }
+      ],
+      "source_description": "Department-wise summary PDF; second official PDF; DMS Act PDF; Rules PDF; Shimla notice.",
+      "apparent_coverage": "Summary says 228 notified services across 32 departments; distinct online/EODB figures are not to be added. It is department-wise aggregate, not service rows.",
+      "deadline_semantics": "Summary does not state limits, unit, clock start, appeal, or deemed approval; Act/Rules text could not be read.",
+      "authority_availability": "No authority names or service mappings in summary; not verified elsewhere in readable material.",
+      "access_problems": "Summary extracted from encoded document payload; direct downloads had SSL errors. Act/Rules rendered encoded; Shimla notice attachment not exposed.",
+      "confidence": "Moderate for stated 228/32; low for currentness and legal semantics.",
+      "service_rows": []
+    },
+    {
+      "jurisdiction": "Jharkhand",
+      "primary_source_url": "https://dop.jharkhand.gov.in/download.aspx?id=840&sub=Jharkhand+Rajya+Sewa+Dene+Ki+Garantee+Act-+2011",
+      "sources": [
+        {
+          "title": "Department of Personnel Act/Gazette text",
+          "url": "https://dop.jharkhand.gov.in/download.aspx?id=840&sub=Jharkhand+Rajya+Sewa+Dene+Ki+Garantee+Act-+2011"
+        },
+        {
+          "title": "RTGS portal",
+          "url": "http://rtgsa.jharkhand.gov.in/"
+        }
+      ],
+      "source_description": "Department of Personnel Act/Gazette text; RTGS portal.",
+      "apparent_coverage": "Act has no service count or schedule; section 3 delegates services/officers/limits/areas to notifications.",
+      "deadline_semantics": "Default clock starts on submission to Designated Officer/authorized subordinate and acknowledgement unless notification says otherwise. First appeal within 30 days of rejection/expiry; second within 60 days of first appellate decision. No calendar/working convention or deemed approval verified.",
+      "authority_availability": "Act defines and authorizes designated/appeal authorities but does not name service-specific officials.",
+      "access_problems": "Official portal connection reset; Act text partly OCR/encoding noisy though relevant English sections readable.",
+      "confidence": "High for framework and no count in Act; low for current service register.",
+      "service_rows": []
+    },
+    {
+      "jurisdiction": "Karnataka",
+      "primary_source_url": "https://www.sakala.kar.nic.in/search_kan.aspx",
+      "sources": [
+        {
+          "title": "Sakala portal",
+          "url": "https://www.sakala.kar.nic.in/search_kan.aspx"
+        },
+        {
+          "title": "FAQ",
+          "url": "https://www.sakala.kar.nic.in/faq.aspx"
+        },
+        {
+          "title": "English compendium",
+          "url": "https://sakala.kar.nic.in/Service%20Compendium/sakala_service_compendium_English%20(Final"
+        },
+        {
+          "title": "2012 Act",
+          "url": "https://dpal.karnataka.gov.in/storage/pdf-files/1of2012%28E%29.pdf"
+        },
+        {
+          "title": "DPAR index",
+          "url": "https://dpal.karnataka.gov.in/146/acts-and-rules-department-wise/en"
+        },
+        {
+          "title": "2026 amendment",
+          "url": "https://dpal.karnataka.gov.in/uploads/media_to_upload1792395814.pdf"
+        },
+        {
+          "title": "2014 amendment",
+          "url": "https://dpal.karnataka.gov.in/storage/pdf-files/ao2014/31%20of%202014%20(E"
+        }
+      ],
+      "source_description": "Sakala portal; FAQ; English compendium.pdf); 2012 Act; DPAR index; 2026 amendment; 2014 amendment.pdf).",
+      "apparent_coverage": "Portal displays 109 departments/institutions and 1,255 services; footer last updated 10 June 2020. Not a verified current count.",
+      "deadline_semantics": "Service-specific limits; some explicitly working days, no universal rule. Clock starts on submission and acknowledgement. FAQ gives 30-day filing windows for first/second appeals; delay compensation, not deemed service approval.",
+      "authority_availability": "Yes: Act schedule has designated and appellate roles and disposal limits. Current row extraction not reliable.",
+      "access_problems": "English compendium PDF was not reliably parsed; English Act consolidated only through 2014; DPAR index lists Act 39 of 2026 and a Kannada consolidated text.",
+      "confidence": "High for portal figures/framework; moderate for completeness/currentness.",
+      "service_rows": []
+    },
+    {
+      "jurisdiction": "Kerala",
+      "primary_source_url": "https://irrigation.kerala.gov.in/rts",
+      "sources": [
+        {
+          "title": "Irrigation Department RTS schedule",
+          "url": "https://irrigation.kerala.gov.in/rts"
+        },
+        {
+          "title": "Act Gazette PDF",
+          "url": "https://www.kswift.kerala.gov.in/sup_docs/docs/23_3_IndustriesDepartment.pdf"
+        },
+        {
+          "title": "Kerala Water Authority list",
+          "url": "https://kwa.kerala.gov.in/en/right-to-service/"
+        }
+      ],
+      "source_description": "Irrigation Department RTS schedule; Act Gazette PDF; Kerala Water Authority list.",
+      "apparent_coverage": "Irrigation page displays six department-specific services; KWA separately displays 17 agency-level top-level services. Neither is Kerala-wide count.",
+      "deadline_semantics": "Irrigation list gives 30, 30, 15, 10, 30, and a triggered “within 45 days” limit, without day-type definition. Act clock starts on receipt; first/second appeal filing 30/60 days and disposal equivalent to service limit. No deemed approval identified.",
+      "authority_availability": "Yes: Irrigation rows list designated officers, first appeals for all and second appeals for some; “-” is preserved where shown. Act requires departments to notify officers.",
+      "access_problems": "Table flattened; unrelated Forest PDFs unreadable; no statewide consolidated register or later update verified.",
+      "confidence": "High for Act and displayed schedules; low for statewide completeness/currentness.",
+      "service_rows": []
+    },
+    {
+      "jurisdiction": "Madhya Pradesh",
+      "primary_source_url": "https://www.mpedistrict.gov.in/MPL/Adhiniyam.aspx",
+      "sources": [
+        {
+          "title": "MP Lokseva Act index",
+          "url": "https://www.mpedistrict.gov.in/MPL/Adhiniyam.aspx"
+        },
+        {
+          "title": "notified list PDF",
+          "url": "https://www.mpedistrict.gov.in/UI/document/MP-PSGA733NotifiedServicesList.pdf"
+        },
+        {
+          "title": "officer lookup",
+          "url": "https://www.mpedistrict.gov.in/MPL/jankari_padabhihit.aspx"
+        },
+        {
+          "title": "notifications",
+          "url": "https://www.mpedistrict.gov.in/MPL/adhisuchna.aspx"
+        },
+        {
+          "title": "Act attachment",
+          "url": "https://www.mpedistrict.gov.in/MPL/getphoto.aspx?ViewAdhiniyam=Ji70uWvZ0Yg="
+        }
+      ],
+      "source_description": "MP Lokseva Act index; notified list PDF; officer lookup; notifications; Act attachment.",
+      "apparent_coverage": "PDF filename contains “733” but PDF unreadable; 733 is not a verified count.",
+      "deadline_semantics": "Unknown: underlying Act/list were inaccessible; no clock, unit, deemed-approval, or appeal rules asserted.",
+      "authority_availability": "Portal has designated/appellate officer lookup, but only selectors/captcha appeared; no records verified.",
+      "access_problems": "PDF and Act returned no extracted content; direct download SSL EOF; officer lookup did not expose results.",
+      "confidence": "High for portal/index identity; low for service-level facts.",
+      "service_rows": []
+    },
+    {
+      "jurisdiction": "Maharashtra",
+      "primary_source_url": "https://aaplesarkar.mahaonline.gov.in/en/CommonForm/ViewAllServices",
+      "sources": [
+        {
+          "title": "Aaple Sarkar all-services directory",
+          "url": "https://aaplesarkar.mahaonline.gov.in/en/CommonForm/ViewAllServices"
+        },
+        {
+          "title": "Act page",
+          "url": "https://aaplesarkar.mahaonline.gov.in/en/CommonForm/RigthToServiceAct"
+        },
+        {
+          "title": "Rural Development RTS page",
+          "url": "https://rdd.maharashtra.gov.in/en/right-to-public-services-act/"
+        },
+        {
+          "title": "FAQ PDF",
+          "url": "https://aaplesarkar.mahaonline.gov.in/pdf/FAQ-English-22-11-2021.pdf"
+        }
+      ],
+      "source_description": "Aaple Sarkar all-services directory; Act page; Rural Development RTS page; FAQ PDF.",
+      "apparent_coverage": "Large multi-department directory; no clear aggregate total in inspected presentation. Serial numbers reach at least 1023, but repeats/skips/groups preclude count.",
+      "deadline_semantics": "“Days” field but no universal calendar/working-day or clock-start rule. Individual entries may state conditions. Appeal route described through first/second departments and third/final Commission appeal; no deemed approval verified.",
+      "authority_availability": "Yes: columns for Designated Officer, First and Second Appellate Officer; some entries incomplete or poorly rendered.",
+      "access_problems": "Very large flattened table; FAQ PDF unreadable; Acts/rules page did not expose documents.",
+      "confidence": "High for directory fields and existence; moderate overall coverage; no basis for count/general semantics.",
+      "service_rows": []
+    },
+    {
+      "jurisdiction": "Manipur",
+      "primary_source_url": "https://dcimanipur.gov.in/media/filer_public/92/ed/92edd7da-7be6-4b89-a00a-a8ff40b730e7/mpsdgact_2021.pdf",
+      "sources": [
+        {
+          "title": "Manipur Public Services Delivery Guarantee Act PDF",
+          "url": "https://dcimanipur.gov.in/media/filer_public/92/ed/92edd7da-7be6-4b89-a00a-a8ff40b730e7/mpsdgact_2021.pdf"
+        },
+        {
+          "title": "Gazette portal",
+          "url": "https://manipurgovtpress.nic.in/en/gazette/"
+        }
+      ],
+      "source_description": "Manipur Public Services Delivery Guarantee Act PDF; Gazette portal.",
+      "apparent_coverage": "Act framework copy, no enumerated service schedule/count verified.",
+      "deadline_semantics": "Unknown: scanned Act was not legible at clause level; do not assume unit, clock start, deemed approval, or appeal timing.",
+      "authority_availability": "Unknown from readable text; no roster verified.",
+      "access_problems": "13-page scanned/image PDF; OCR/text extraction unusable. Gazette page gives archive/access context but no specific service notification verified.",
+      "confidence": "High for title/official source and no count ascertainable; low/undetermined for operative details.",
+      "service_rows": []
+    },
+    {
+      "jurisdiction": "Meghalaya",
+      "primary_source_url": "https://meghalaya.gov.in/circulars/content/52002",
+      "sources": [
+        {
+          "title": "Official circular page",
+          "url": "https://meghalaya.gov.in/circulars/content/52002"
+        },
+        {
+          "title": "notification PDF",
+          "url": "https://meghalaya.gov.in/sites/default/files/circulars/PER_ARC_17_2022_20.pdf"
+        },
+        {
+          "title": "Act/Rules compilation",
+          "url": "https://invest.meghalaya.gov.in/Documents/MRPS%20Act%202020.pdf"
+        },
+        {
+          "title": "what’s new",
+          "url": "https://meghalaya.gov.in/whats-new"
+        }
+      ],
+      "source_description": "Official circular page; notification PDF; Act/Rules compilation; what’s new.",
+      "apparent_coverage": "5 October 2026 notice adds serials 237–240; proves four additions and list reached at least 240, not exact current total.",
+      "deadline_semantics": "Four entries specify 3 or 4 working days. Act excludes public/official holidays; clock starts on complete application receipt. First appeal within 30 days after rejection/deadline expiry; appeal disposal within 30 days; further appeal within 30 days. No deemed approval stated.",
+      "authority_availability": "Yes: notice identifies Designated Officers and Appellate Authority for entries 237–240; not a full roster.",
+      "access_problems": "Notice PDF downloaded and text inspected; Rules PDF is from government Invest domain; separate law-site Rules URL returned 404. No consolidated current list verified.",
+      "confidence": "High for notice and statutory semantics; moderate for overall coverage; serial 240 is not an exact total.",
+      "service_rows": []
+    },
+    {
+      "jurisdiction": "Mizoram",
+      "primary_source_url": "https://dpar.mizoram.gov.in/post/lists-of-notified-services-under-the-mizoram-right-to-public-services-act-2015-as-on-7112024",
+      "sources": [
+        {
+          "title": "DP&AR list page",
+          "url": "https://dpar.mizoram.gov.in/post/lists-of-notified-services-under-the-mizoram-right-to-public-services-act-2015-as-on-7112024"
+        },
+        {
+          "title": "Gazette list PDF",
+          "url": "https://dpar.mizoram.gov.in/uploads/attachments/2025/09/26fb59348b90f8dba57aa535e2992b4e/pages-48-ex-770-list-notified-services-under-mizoram-right-to-public-rervices-act-2015-as-on-7112024.pdf"
+        },
+        {
+          "title": "Act PDF",
+          "url": "https://dpar.mizoram.gov.in/uploads/attachments/46d7262b39ce1e6a265f4ba4c779e9ae/pages-48-the-mizoram-right-to-public-services-act-2015.pdf"
+        }
+      ],
+      "source_description": "DP&AR list page; Gazette list PDF; Act PDF.",
+      "apparent_coverage": "Official page identifies list “as on 7.11.2024”; no count/content verified.",
+      "deadline_semantics": "Unknown from inaccessible list/Act; no day convention, clock, or appeal rules asserted.",
+      "authority_availability": "Unknown; attachment contents not accessible.",
+      "access_problems": "PDF extraction/direct download failed; page verified title/date/link only.",
+      "confidence": "High for official listing and date; low for attachment details.",
+      "service_rows": []
+    },
+    {
+      "jurisdiction": "Nagaland",
+      "primary_source_url": "https://ipr.nagaland.gov.in/consideration-and-passing-of-government-bills-1",
+      "sources": [
+        {
+          "title": "DIPR Bill-passage report",
+          "url": "https://ipr.nagaland.gov.in/consideration-and-passing-of-government-bills-1"
+        },
+        {
+          "title": "Unified Services Portal",
+          "url": "https://services.nagaland.gov.in/"
+        },
+        {
+          "title": "DP&AR notifications",
+          "url": "https://dpar.nagaland.gov.in/notifications/"
+        }
+      ],
+      "source_description": "DIPR Bill-passage report; Unified Services Portal; DP&AR notifications.",
+      "apparent_coverage": "Official report says Right to Public Services Bill, 2026 passed unanimously 3 September 2026; no enacted text, commencement or service list verified. Portal landing page shows no entries/count.",
+      "deadline_semantics": "No service limits, unit, clock, deemed approval, or appeals verified.",
+      "authority_availability": "None listed in opened materials; cannot determine whether later enacted text/notifications provide them.",
+      "access_problems": "DIPR report lacks bill text/assent; portal directory entries absent in extraction; notifications page did not expose RTS schedule.",
+      "confidence": "High for reported bill passage; low for operative framework.",
+      "service_rows": []
+    },
+    {
+      "jurisdiction": "Odisha",
+      "primary_source_url": "https://ortpsa.odisha.gov.in/",
+      "sources": [
+        {
+          "title": "ORTPSA portal",
+          "url": "https://ortpsa.odisha.gov.in/"
+        },
+        {
+          "title": "department directory",
+          "url": "https://ortpsa.odisha.gov.in/department.php"
+        },
+        {
+          "title": "451-labelled PDF",
+          "url": "https://ortpsa.odisha.gov.in/assets_web/website/Notificationof451numberofPublicServicesunderORTPSA.pdf"
+        },
+        {
+          "title": "445-labelled PDF",
+          "url": "https://ortpsa.odisha.gov.in/assets_web/website/Notification_of_445_number_of_Public_Services_under_ORTPSA_as_on_16.12.2025.pdf"
+        },
+        {
+          "title": "Act PDF",
+          "url": "https://serviceonline.gov.in/resources/pdf/Odisha_Act.pdf"
+        },
+        {
+          "title": "GA notification PDF",
+          "url": "https://ga.odisha.gov.in/sites/default/files/2024-03/Gazette%20Notification%20of%20Public%20Services%20under%20ORTPSA.pdf"
+        }
+      ],
+      "source_description": "ORTPSA portal; department directory; 451-labelled PDF; 445-labelled PDF; Act PDF; GA notification PDF.",
+      "apparent_coverage": "Portal states 451 services/32 departments; directory’s 32 counts sum to 451. Another linked PDF says 445 as of 16-12-2025; version/currency conflict remains.",
+      "deadline_semantics": "Schedule gives service-specific limits, sometimes event-triggered. No calendar/working convention established. Act defines time limit and appeal/revision/penalties; first appeal within 30 days after rejection/expiry. No deemed approval found.",
+      "authority_availability": "Yes: schedule has Designated Officer, Appellate and Revisional Authority columns.",
+      "access_problems": "Dynamic service/Act pages inaccessible; linked PDFs have 451/445 version ambiguity.",
+      "confidence": "High for portal count/directory arithmetic; moderate for schedule version and current service detail.",
+      "service_rows": []
+    },
+    {
+      "jurisdiction": "Punjab",
+      "primary_source_url": "https://digi.punjab.gov.in/actNotification",
+      "sources": [
+        {
+          "title": "DiGi Punjab notifications",
+          "url": "https://digi.punjab.gov.in/actNotification"
+        },
+        {
+          "title": "about PB Trac",
+          "url": "https://digi.punjab.gov.in/about"
+        },
+        {
+          "title": "PB Trac",
+          "url": "https://digi.punjab.gov.in/pbTrack"
+        },
+        {
+          "title": "2021 Rules PDF",
+          "url": "https://connect.punjab.gov.in/assets/documents/actAndRulesPDfForPbTrac/newRules.pdf"
+        }
+      ],
+      "source_description": "DiGi Punjab notifications; about PB Trac; PB Trac; 2021 Rules PDF.",
+      "apparent_coverage": "Notification listing contains mixed records and is paginated; no statewide service count.",
+      "deadline_semantics": "Rules require acknowledgement to state service-specific limit and record receipt time; no universal service-day unit/clock rule or deemed approval in inspected Rules. Appeal and revision frameworks referenced.",
+      "authority_availability": "Rules provide for designated and appellate authorities and require display; no service-specific roster verified.",
+      "access_problems": "Notification attachment URLs/content not exposed; some PDFs extraction-only; accessible Rules text inspected.",
+      "confidence": "High for Rules and portal listing; low-to-moderate for current coverage.",
+      "service_rows": []
+    },
+    {
+      "jurisdiction": "Rajasthan",
+      "primary_source_url": "https://rajswasthya.rajasthan.gov.in/admin/upload/act_rule/2.pdf",
+      "sources": [
+        {
+          "title": "Act PDF",
+          "url": "https://rajswasthya.rajasthan.gov.in/admin/upload/act_rule/2.pdf"
+        },
+        {
+          "title": "commencement Gazette",
+          "url": "https://rajswasthya.rajasthan.gov.in/admin/upload/act_rule/1.pdf"
+        },
+        {
+          "title": "RajNivesh services",
+          "url": "https://rajnivesh.rajasthan.gov.in/Home/Services"
+        },
+        {
+          "title": "SIPF notification",
+          "url": "https://sipf.rajasthan.gov.in/RGDPSAct2011/Notification.pdf"
+        },
+        {
+          "title": "additional order PDF",
+          "url": "https://jankalyanfile.rajasthan.gov.in/WebMyWayFiles/OrderEntry/Nagar_Palika__CHOMU/2023/Citizen_Charter/O_160123_c897834d-966f-4342-8861-9f43d9afa2a5.pdf"
+        }
+      ],
+      "source_description": "Act PDF; commencement Gazette; RajNivesh services; SIPF notification; additional order PDF.",
+      "apparent_coverage": "Act has no schedule/count; notifications are delegated. RajNivesh is an investment/regulatory directory, not verified as comprehensive statutory schedule.",
+      "deadline_semantics": "Clock starts on submission to officer/authorized subordinate and acknowledgement. Service limits are notification-specific; no unit convention. First appeal within 30 days, second within 60 days, extensions for cause; no deemed approval found.",
+      "authority_availability": "Act requires notification of officers and first/second appellate authorities; no service-specific roster verified.",
+      "access_problems": "Rules and notification PDFs unreadable; RajNivesh partial and not proven statutory register.",
+      "confidence": "High for Act provisions/no count in Act; moderate for research limitation, not evidence of absence elsewhere.",
+      "service_rows": []
+    },
+    {
+      "jurisdiction": "Sikkim",
+      "primary_source_url": "https://www.sikkim.gov.in/departments/law-parliamentary-affairs-department/list-of-acts-passed-by-the-sikkim-legislative-assembly-1975-till-date",
+      "sources": [
+        {
+          "title": "Law Department Acts index",
+          "url": "https://www.sikkim.gov.in/departments/law-parliamentary-affairs-department/list-of-acts-passed-by-the-sikkim-legislative-assembly-1975-till-date"
+        },
+        {
+          "title": "Gazette PDF attempted",
+          "url": "https://www.sikkim.gov.in/uploads/Gazette/189_20240720.pdf"
+        }
+      ],
+      "source_description": "Law Department Acts index; Gazette PDF attempted.",
+      "apparent_coverage": "Index includes a 2022 “Sikkim Public Services Delivery” entry; no accessible service list/count.",
+      "deadline_semantics": "Unknown: no deadline or procedure text verified.",
+      "authority_availability": "Unknown; no officer list verified.",
+      "access_problems": "Index entry had no accessible document link; separate Gazette was scanned/unreadable and relevance to services not established.",
+      "confidence": "High for index entry and lack of exposed schedule; low for substantive details.",
+      "service_rows": []
+    },
+    {
+      "jurisdiction": "Tamil Nadu",
+      "primary_source_url": "https://www.mhc.tn.gov.in/judis/index.php/casestatus/viewpdf/278511",
+      "sources": [
+        {
+          "title": "Madras High Court order",
+          "url": "https://www.mhc.tn.gov.in/judis/index.php/casestatus/viewpdf/278511"
+        },
+        {
+          "title": "Government rules viewer",
+          "url": "https://www.tn.gov.in/rulesviewer.php?dep_id=MjI="
+        },
+        {
+          "title": "Agriculture Citizen Charter PDF",
+          "url": "https://cms.tn.gov.in/cms_migrated/document/docfiles/agri_e_cc_2026_27.pdf"
+        }
+      ],
+      "source_description": "Madras High Court order; Government rules viewer; Agriculture Citizen Charter PDF.",
+      "apparent_coverage": "No current notified-services count/list verified. 2016 order recounts Citizen Charter submissions but is not a schedule.",
+      "deadline_semantics": "Order’s four-week direction is case-specific; no general day unit, clock, deemed approval, or appeal semantics.",
+      "authority_availability": "No general roster in order; individual case respondents and departmental charter discussion do not establish one.",
+      "access_problems": "Rules viewer showed unrelated rules; current charter PDF could not be read; underlying table referenced in order not opened.",
+      "confidence": "High for what order says; low for present service-list status.",
+      "service_rows": []
+    },
+    {
+      "jurisdiction": "Telangana",
+      "primary_source_url": "https://labour.telangana.gov.in/CitizenChart.do",
+      "sources": [
+        {
+          "title": "Labour Department Citizen Charter",
+          "url": "https://labour.telangana.gov.in/CitizenChart.do"
+        },
+        {
+          "title": "labour dashboard registration page",
+          "url": "https://labour.telangana.gov.in/publicDashBoard.do?mode=showLabourActsData&actType=NMTU"
+        },
+        {
+          "title": "dashboard categories",
+          "url": "https://labour.telangana.gov.in/publicDashBoard.do?mode=getLabourActs"
+        },
+        {
+          "title": "Law index",
+          "url": "https://law.telangana.gov.in/stateLaws"
+        },
+        {
+          "title": "Labour Acts page",
+          "url": "https://labour.telangana.gov.in/ActServices.do"
+        }
+      ],
+      "source_description": "Labour Department Citizen Charter; labour dashboard registration page; dashboard categories; Law index; Labour Acts page.",
+      "apparent_coverage": "Charter lists 11 service-delivery parameters and 3 quasi-judicial/complaint parameters, within Labour Department only. Not statewide notified-service count.",
+      "deadline_semantics": "Charter durations in days/months but no day type, clock start, deemed approval or statutory appeal process. Dashboard has one 30-day category, also without semantics.",
+      "authority_availability": "Charter gives administrative complaint ladder, not verified RTS appeal authorities; no per-service designated officer list.",
+      "access_problems": "Labour Acts page and Law index not adequate schedule; scope is departmental.",
+      "confidence": "High for charter/dashboard content and limits; low for statewide RTS framework.",
+      "service_rows": []
+    },
+    {
+      "jurisdiction": "Tripura",
+      "primary_source_url": "https://tripura.gov.in/sites/default/files/Notification%20from%20Revenue%20dept.pdf",
+      "sources": [
+        {
+          "title": "Revenue notification PDF",
+          "url": "https://tripura.gov.in/sites/default/files/Notification%20from%20Revenue%20dept.pdf"
+        },
+        {
+          "title": "North Tripura RTS page",
+          "url": "https://northtripura.nic.in/form/right-to-service/"
+        },
+        {
+          "title": "Rules PDF",
+          "url": "https://cdn.s3waas.gov.in/s3fccb3cdc9acc14a6e70a12f74560c026/uploads/2025/06/2025060281.pdf"
+        }
+      ],
+      "source_description": "Revenue notification PDF; North Tripura RTS page; Rules PDF.",
+      "apparent_coverage": "Notification lists 29 numbered Excise entries only; not statewide total.",
+      "deadline_semantics": "Typically 7/10 days for designated/competent action and 30 for appellate action; no day-type rule. Some entries trigger on fee/payment/approval. No deemed approval stated in schedule.",
+      "authority_availability": "Yes: designated/competent officer and appellate columns; roles include Collector/Commissioner and others. OCR may impair exact row assignments.",
+      "access_problems": "Government PDF extracted locally but OCR noisy; Rules scan unreadable. Notification date/reference characters corrupted.",
+      "confidence": "Moderate-high for department schedule and 29 apparent entries; low for statewide total and precise row alignment.",
+      "service_rows": []
+    },
+    {
+      "jurisdiction": "Uttar Pradesh",
+      "primary_source_url": "https://upcmo.up.nic.in/janhit.htm",
+      "sources": [
+        {
+          "title": "CMO online services list",
+          "url": "https://upcmo.up.nic.in/janhit.htm"
+        },
+        {
+          "title": "Act PDF",
+          "url": "https://sewayojan.up.nic.in/NEWS/janhit_adhiniyam.pdf"
+        }
+      ],
+      "source_description": "CMO online services list; Act PDF.",
+      "apparent_coverage": "Page explicitly says 382 services across 45 departments, dated 14.12.2022; apparent dated-list coverage, not current count.",
+      "deadline_semantics": "Service/appeal limits shown, but units inconsistent; some explicitly working days, others bare numbers. No universal clock start or deemed approval verified.",
+      "authority_availability": "Yes: designated, first and second appellate columns; some rows defer officer designation to departments.",
+      "access_problems": "Large table flattened/omitted; Act PDF not usable as extracted text.",
+      "confidence": "High for page claim/fields; moderate deadline interpretation; low current completeness.",
+      "service_rows": []
+    },
+    {
+      "jurisdiction": "Uttarakhand",
+      "primary_source_url": "https://bor.uk.gov.in/document-category/board-orders/page/2",
+      "sources": [
+        {
+          "title": "Board of Revenue order listing",
+          "url": "https://bor.uk.gov.in/document-category/board-orders/page/2"
+        },
+        {
+          "title": "linked notification scan",
+          "url": "https://cdnbbsr.s3waas.gov.in/s303e39d2a742a6db6139e0fce841356ab/uploads/2025/02/202502121916200159.pdf"
+        },
+        {
+          "title": "consolidated Act",
+          "url": "https://cdnbbsr.s3waas.gov.in/s3bc7f621451b4f5df308a8e098112185d/uploads/2025/03/20250325159522727.pdf"
+        },
+        {
+          "title": "Commission page",
+          "url": "https://it.uk.gov.in/about-department/uttarakhand-right-to-service-commission/"
+        }
+      ],
+      "source_description": "Board of Revenue order listing; linked notification scan; consolidated Act; Commission page.",
+      "apparent_coverage": "Listing title says details of services/time limits/first and second appellate authorities; image-only 3-page scan prevented enumeration. No count verified.",
+      "deadline_semantics": "Act says clock starts on receipt; no day convention for service limits. First appeal disposal, as far as possible, within 30 days; second appeal filing within 30 days and disposal, as far as possible, within 45 days. No deemed approval found.",
+      "authority_availability": "Listing title indicates authorities; Act framework allows notification; individual rows unreadable.",
+      "access_problems": "Notification scan OCR unusable; Act readable.",
+      "confidence": "High for official sources/statutory procedure; low for service rows/count.",
+      "service_rows": []
+    },
+    {
+      "jurisdiction": "West Bengal",
+      "primary_source_url": "https://wbconsumers.gov.in/WBRTPS/index",
+      "sources": [
+        {
+          "title": "RTPS portal",
+          "url": "https://wbconsumers.gov.in/WBRTPS/index"
+        },
+        {
+          "title": "services-at-a-glance index",
+          "url": "https://wbconsumers.gov.in/WBRTPS/HtmlPage/services_at_a_glance"
+        },
+        {
+          "title": "Act/rules page",
+          "url": "https://wbconsumers.gov.in/HtmlPages/wbps_actsrules.aspx"
+        },
+        {
+          "title": "UDMA 2020 notification",
+          "url": "https://udma.wb.gov.in/public/uploads/file_doc/238_ma_o_c-4_1m-31_2015.pdf"
+        }
+      ],
+      "source_description": "RTPS portal; services-at-a-glance index; Act/rules page; UDMA 2020 notification.",
+      "apparent_coverage": "Central index rendered no rows/count. Separate notification covers road-cutting permission only. No statewide total.",
+      "deadline_semantics": "UDMA notice states 7 days from complete application. Calendar/working unit unstated. Appeal/review columns exist but exact timelines were garbled.",
+      "authority_availability": "Index has no entries; specific 2020 notice names designated, appellate and reviewing roles for covered categories.",
+      "access_problems": "RTPS index blank in extraction; Act and other PDFs unreadable; one departmental table partly garbled.",
+      "confidence": "Moderate for central index limitation and specific notice; high for 7-day statement; no statewide count.",
+      "service_rows": []
+    },
+    {
+      "jurisdiction": "Andaman and Nicobar Islands",
+      "primary_source_url": "https://andamannicobar.gov.in/admin-pannel/whatsnew/3445-Press%20Note%20Draft%20Regulation%20RTS.pdf",
+      "sources": [
+        {
+          "title": "2026 draft Regulation PDF",
+          "url": "https://andamannicobar.gov.in/admin-pannel/whatsnew/3445-Press%20Note%20Draft%20Regulation%20RTS.pdf"
+        },
+        {
+          "title": "2014 ESD Rules",
+          "url": "https://sovtech.andamannicobar.gov.in/docs/Notification%20ESD.pdf"
+        },
+        {
+          "title": "latest updates",
+          "url": "https://andamannicobar.gov.in/latestupdate_all.php"
+        }
+      ],
+      "source_description": "2026 draft Regulation PDF; 2014 ESD Rules; latest updates.",
+      "apparent_coverage": "Draft delegates service list to future notifications; no operative notified-service count/list verified.",
+      "deadline_semantics": "Draft—not operative evidence—sets appeal process and 30-day appeal periods; 3 working days is acknowledgement, not service limit. No general service deadline/unit/clock or deemed service approval established.",
+      "authority_availability": "Draft requires publication of officer names after notification; no actual service roster.",
+      "access_problems": "Draft is blank-numbered and commencement depends on Gazette notification. ESD rules are not an RTS schedule; no operative schedule found.",
+      "confidence": "High that document is draft and no list in it; low regarding existence of separate current notifications.",
+      "service_rows": []
+    },
+    {
+      "jurisdiction": "Chandigarh",
+      "primary_source_url": "https://chdengineering.gov.in/right-to-service",
+      "sources": [
+        {
+          "title": "Engineering Department RTS page",
+          "url": "https://chdengineering.gov.in/right-to-service"
+        },
+        {
+          "title": "linked 2025 PDF",
+          "url": "https://chdengineering.gov.in/sites/default/files/2025-12/1766051741Civil_Engineering.pdf"
+        },
+        {
+          "title": "DC office page",
+          "url": "https://chandigarhdistrict.nic.in/right-to-service/"
+        },
+        {
+          "title": "Commission letters",
+          "url": "https://rtsc.chd.gov.in/index.php/letter"
+        }
+      ],
+      "source_description": "Engineering Department RTS page; linked 2025 PDF; DC office page; Commission letters.",
+      "apparent_coverage": "2025 notification lists 17 entries for Civil Engineering office only; not Chandigarh-wide total. Separate older 2019 DC office notice.",
+      "deadline_semantics": "Column labels working days/hours/minutes; clock start and exact interpretation of each “Days” value not established. No deemed approval or appeal filing period verified.",
+      "authority_availability": "Yes: 2025 table gives designated and first/second appellate authorities for its entries.",
+      "access_problems": "Page reproduced schedule, but linked PDF extraction failed; commission letters repository is not inventory.",
+      "confidence": "High for 17 department-specific entries/page content; low for jurisdiction-wide completeness.",
+      "service_rows": []
+    },
+    {
+      "jurisdiction": "Dadra and Nagar Haveli and Daman and Diu",
+      "primary_source_url": "https://cdnbbsr.s3waas.gov.in/s371e09b16e21f7b6919bbfc43f6a5b2f0/uploads/2022/12/2022121693.pdf",
+      "sources": [
+        {
+          "title": "2022 Rules Gazette PDF",
+          "url": "https://cdnbbsr.s3waas.gov.in/s371e09b16e21f7b6919bbfc43f6a5b2f0/uploads/2022/12/2022121693.pdf"
+        },
+        {
+          "title": "Industries notification page",
+          "url": "https://ddd.gov.in/document/notification-regarding-competent-authorities-their-services-timeline-and-punitive-measures-against-defaulter-departments/"
+        },
+        {
+          "title": "linked 2017 schedule",
+          "url": "https://cdnbbsr.s3waas.gov.in/s371e09b16e21f7b6919bbfc43f6a5b2f0/uploads/2023/03/2023031692.pdf"
+        },
+        {
+          "title": "services portal",
+          "url": "https://ddd.gov.in/services/"
+        },
+        {
+          "title": "DIC page",
+          "url": "https://ddd.gov.in/district-industries-centre/"
+        }
+      ],
+      "source_description": "2022 Rules Gazette PDF; Industries notification page; linked 2017 schedule; services portal; DIC page.",
+      "apparent_coverage": "2017 schedule covers Daman & Diu Single Window Agency industry clearances only; no count or all-UT inventory.",
+      "deadline_semantics": "Rules exclude public holidays and applicant non-response days; acknowledgement within 3 working days. Specific 2017 industry schedule says timelines are working days and includes deemed approval for its defined scope; not universal.",
+      "authority_availability": "Rules define/publish designated, grievance, designated and UT appellate authorities; schedule has competent/deemed approval authorities. No complete UT roster.",
+      "access_problems": "General services page exposes no list; rules readable; schedule page/PDF opened and inspected.",
+      "confidence": "Moderate for Rules and limited schedule; low for complete coverage.",
+      "service_rows": []
+    },
+    {
+      "jurisdiction": "Delhi (NCT)",
+      "primary_source_url": "https://delhi.gov.in/centralized-cos?field_cos_no_value=&title=&field_cos_type_target_id_1=281&field_date_value=&field_date_value_1=&field_domain_id_value=&field_pdf_content_value=&field_subject_value=",
+      "sources": [
+        {
+          "title": "GNCTD Dastavez Act index",
+          "url": "https://delhi.gov.in/centralized-cos?field_cos_no_value=&title=&field_cos_type_target_id_1=281&field_date_value=&field_date_value_1=&field_domain_id_value=&field_pdf_content_value=&field_subject_value="
+        },
+        {
+          "title": "Assembly bills page",
+          "url": "https://delhiassembly.delhi.gov.in/dlas-govt-bills"
+        },
+        {
+          "title": "e-District catalogue",
+          "url": "https://edistrict.delhigovt.nic.in/Public/Services"
+        },
+        {
+          "title": "Services Department",
+          "url": "https://services.delhi.gov.in/"
+        }
+      ],
+      "source_description": "GNCTD Dastavez Act index; Assembly bills page; e-District catalogue; Services Department.",
+      "apparent_coverage": "Index identifies 2026 Act No. 10; actual Act PDF not opened. e-District catalogue reaches 454 but is not verified as statutory inventory; excluded from Act count.",
+      "deadline_semantics": "Unknown from Act index; e-District shows some numerals and exclusions but does not establish unit/clock or Act-wide rules.",
+      "authority_availability": "Unknown; index does not show roster, e-District table has no officer column.",
+      "access_problems": "Act PDF not opened; catalogue large and mixed; Services Department page not useful.",
+      "confidence": "High for index entry and Assembly dates; low for operative coverage/semantics.",
+      "service_rows": []
+    },
+    {
+      "jurisdiction": "Jammu and Kashmir",
+      "primary_source_url": "https://jkgad.nic.in/En/JKSG.aspx",
+      "sources": [
+        {
+          "title": "GAD Public Service Guarantee",
+          "url": "https://jkgad.nic.in/En/JKSG.aspx"
+        },
+        {
+          "title": "2011 Rules",
+          "url": "https://law.jk.gov.in/jklawData/StaRules/Public%20Services%20Guarantee%20Rules.pdf"
+        },
+        {
+          "title": "Law Department SRO/SO index",
+          "url": "https://law.jk.gov.in/LnJNotSRO_SO.php"
+        },
+        {
+          "title": "GAD orders",
+          "url": "https://jkgad.nic.in/En/OrderCirculer.aspx?ordType=S"
+        },
+        {
+          "title": "Act resource",
+          "url": "https://jkgad.nic.in/common/showpdf.aspx?actCode=psu90"
+        }
+      ],
+      "source_description": "GAD Public Service Guarantee; 2011 Rules; Law Department SRO/SO index; GAD orders; Act resource.",
+      "apparent_coverage": "Multiple notification IDs shown; no total or service rows verified.",
+      "deadline_semantics": "Rules exclude public holidays; acknowledgement records receipt/last date; 30-/60-day appeal filing periods. No universal service clock rule beyond acknowledgement was verified; no deemed approval found.",
+      "authority_availability": "Rules/Form 2 provide first/second appellate authorities; GAD lists orders but actual service-specific authority data not verified.",
+      "access_problems": "GAD list content/attachments inaccessible; Act endpoint partial; Rules PDF readable.",
+      "confidence": "High for Rules; low for current service rows/count.",
+      "service_rows": []
+    },
+    {
+      "jurisdiction": "Ladakh",
+      "primary_source_url": "https://ladakh.gov.in/document/notification-of-services-in-terms-of-public-service-guarantee-act-2011-in-union-territory-of-ladakh/",
+      "sources": [
+        {
+          "title": "GAD document page",
+          "url": "https://ladakh.gov.in/document/notification-of-services-in-terms-of-public-service-guarantee-act-2011-in-union-territory-of-ladakh/"
+        },
+        {
+          "title": "26 May 2023 tentative annexure PDF",
+          "url": "https://cdnbbsr.s3waas.gov.in/s395192c98732387165bf8e396c0f2dad2/uploads/2023/05/2023052634.pdf"
+        },
+        {
+          "title": "PSGA page",
+          "url": "https://ladakh.gov.in/public-service-guarantee/"
+        },
+        {
+          "title": "2026 auto-appeal news",
+          "url": "https://ladakh.gov.in/gad-in-collaboration-with-nic-ladakh-conducts-training-on-public-services-and-auto-appeal-system/"
+        }
+      ],
+      "source_description": "GAD document page; 26 May 2023 tentative annexure PDF; PSGA page; 2026 auto-appeal news.",
+      "apparent_coverage": "28-page annexure, multi-department; no aggregate count. It explicitly says tentative and planned later notification, not verified final inventory.",
+      "deadline_semantics": "Entries vary; some explicitly working days or triggers, others bare days. No universal unit/clock/deemed approval. Separate 2026 news describes auto-appeal workflow, not the legal list.",
+      "authority_availability": "Yes: tentative annexure has Designated/First/Second Appellate Authority columns, not confirmed as final designations.",
+      "access_problems": "PDF downloaded and text-extracted; landing page sparse and does not link annexure in displayed content.",
+      "confidence": "High for tentative status and contents; low-to-moderate as current final inventory.",
+      "service_rows": []
+    },
+    {
+      "jurisdiction": "Lakshadweep",
+      "primary_source_url": "https://lakshadweep.gov.in/document/notification-lakshadweep-right-to-public-services-amendment-regulation-2026-no-15-of-2026-appointment-of-date-for-coming-into-force-reg-gazette-vol-lxii-no-56/",
+      "sources": [
+        {
+          "title": "2026 amendment commencement page",
+          "url": "https://lakshadweep.gov.in/document/notification-lakshadweep-right-to-public-services-amendment-regulation-2026-no-15-of-2026-appointment-of-date-for-coming-into-force-reg-gazette-vol-lxii-no-56/"
+        },
+        {
+          "title": "Gazette PDF",
+          "url": "https://cdn.s3waas.gov.in/s358238e9ae2dd305d79c2ebc8c1883422/uploads/2026/10/17912644772593.pdf"
+        },
+        {
+          "title": "services portal",
+          "url": "https://lakshadweep.gov.in/services/"
+        },
+        {
+          "title": "2022 Regulation",
+          "url": "https://thc.nic.in/Central%20Governmental%20Regulations/Lakshadweep%20(Right%20to%20Public%20Services"
+        }
+      ],
+      "source_description": "2026 amendment commencement page; Gazette PDF; services portal; 2022 Regulation%20Regulation,%202022.pdf).",
+      "apparent_coverage": "No section 4 notified-service list/count verified. Services portal exposes category filters only.",
+      "deadline_semantics": "Service periods delegated to notifications; no service-day convention/clock start without schedule. Amendment creates deemed appeals on missed process deadlines, not deemed service approval; grievance/appeal periods are distinct.",
+      "authority_availability": "Law provides for Appellate Authority and publication of officers; no named roster verified.",
+      "access_problems": "2026 Gazette and principal Regulation read; services portal lacks list; no separate notification located.",
+      "confidence": "High for framework/amendment and limits of sources; moderate that separate list was not located, not proof of absence.",
+      "service_rows": []
+    },
+    {
+      "jurisdiction": "Puducherry",
+      "primary_source_url": "https://py.gov.in/onlineservices",
+      "sources": [
+        {
+          "title": "Online services",
+          "url": "https://py.gov.in/onlineservices"
+        },
+        {
+          "title": "GOs/notifications",
+          "url": "https://py.gov.in/gos-and-notification"
+        },
+        {
+          "title": "Gazette information",
+          "url": "https://styandptg.py.gov.in/gazet.html"
+        },
+        {
+          "title": "draft document endpoint",
+          "url": "https://eodb.py.gov.in/ApplyClearance/ViewDraftdoc/1025"
+        }
+      ],
+      "source_description": "Online services; GOs/notifications; Gazette information; draft document endpoint.",
+      "apparent_coverage": "Online page visibly lists nine entries, but not an RTS schedule or verified notified-service count.",
+      "deadline_semantics": "No service deadline, unit, clock, deemed approval, or appeal details verified.",
+      "authority_availability": "No designated officers in online list.",
+      "access_problems": "General pages accessible; Gazette info did not identify schedule; EODB draft URL yielded no content.",
+      "confidence": "Moderate-high for online-page limitations; absence of adequate schedule is a research result, not proof none exists.",
+      "service_rows": []
+    }
+  ]
+}
