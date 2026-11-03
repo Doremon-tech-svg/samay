@@ -10,9 +10,11 @@ import { readSlipWithFallback } from './services/slipVision.js';
 import { detectDemoSlipKey, getDemoSlipResult } from './services/demoSlipBank.js';
 import { mountCompiler } from './routes/compilerRoutes.js';
 import { translateWithBhashini } from './services/bhashini.js';
+import { askCopilot, normalizeRole } from './services/copilot.js';
 
 const HOLIDAYS = JSON.parse(readFileSync(new URL('../data/holidays.json', import.meta.url)));
 const RTS_SOURCES = JSON.parse(readFileSync(new URL('../data/rtsSources.json', import.meta.url)));
+const DEMO_USERS = JSON.parse(readFileSync(new URL('../data/demoUsers.json', import.meta.url)));
 const K_ANON = 5; // commission view hides office rows with fewer than K applications
 const PAUSE_REASONS = ['QUERY_TO_APPLICANT'];
 
@@ -38,7 +40,72 @@ export function createApp({ pool, demoMode = false, now = () => new Date().toISO
     clockStatus({ receivedOn: a.received_on, disposedOn: a.disposed_on }, { days: s.days, dayType: s.day_type },
       { holidays: HOLIDAYS[s.state_code] ?? [], pauses, asOf });
 
+  async function copilotContext(role, identity, asOf) {
+    const normalizedRole = normalizeRole(role);
+    let rows = [];
+    if (normalizedRole === 'citizen') {
+      const alias = String(identity?.phone || identity?.name || '').slice(0, 120);
+      if (alias) {
+        rows = (await pool.query('SELECT id FROM applications WHERE applicant_alias = $1 ORDER BY received_on DESC LIMIT 30', [alias])).rows;
+      }
+    } else if (normalizedRole === 'officer') {
+      const officeId = String(identity?.officeId || '').slice(0, 120);
+      if (officeId) rows = (await pool.query('SELECT id FROM applications WHERE office_id = $1 AND status = \'PENDING\' ORDER BY received_on ASC LIMIT 100', [officeId])).rows;
+    } else {
+      rows = (await pool.query('SELECT id FROM applications LIMIT 250')).rows;
+    }
+
+    const compact = [];
+    for (const row of rows) {
+      const loaded = await load(row.id);
+      if (!loaded?.s) continue;
+      const clock = statusOf(loaded, asOf);
+      compact.push({
+        ackNo: loaded.a.ack_no,
+        serviceName: loaded.s.name,
+        office: loaded.a.officeName,
+        district: loaded.a.district,
+        receivedOn: loaded.a.received_on,
+        dueDate: clock.dueDate,
+        clockState: clock.state,
+        daysLeft: clock.remaining,
+        daysLate: clock.daysLate,
+        reasonCode: loaded.a.reason_code,
+        disposed: Boolean(loaded.a.disposed_on)
+      });
+    }
+
+    if (normalizedRole === 'citizen') return { applications: compact.slice(0, 20) };
+    if (normalizedRole === 'officer') return { radar: compact.sort((a, b) => (a.clockState === 'BREACHED' ? -1 : 1) - (b.clockState === 'BREACHED' ? -1 : 1)).slice(0, 40) };
+
+    const aggregate = new Map();
+    for (const item of compact) {
+      const key = `${item.office} · ${item.district}`;
+      const current = aggregate.get(key) || { office: item.office, district: item.district, total: 0, late: 0, atRisk: 0, open: 0, reasons: {} };
+      current.total += 1;
+      if (['BREACHED', 'COMPLETED_LATE'].includes(item.clockState)) current.late += 1;
+      if (item.clockState === 'AT_RISK') current.atRisk += 1;
+      if (!item.disposed) current.open += 1;
+      if (item.reasonCode && ['BREACHED', 'AT_RISK'].includes(item.clockState)) current.reasons[item.reasonCode] = (current.reasons[item.reasonCode] || 0) + 1;
+      aggregate.set(key, current);
+    }
+    return {
+      offices: [...aggregate.values()].map((item) => item.total < K_ANON
+        ? { office: item.office, district: item.district, suppressed: true, note: `fewer than ${K_ANON} applications` }
+        : { ...item, lateRate: +(item.late / item.total).toFixed(3) })
+    };
+  }
+
   app.get('/api/health', (_req, res) => res.json({ ok: true }));
+  app.get('/api/demo/users', (_req, res) => res.json(DEMO_USERS));
+  app.post('/api/copilot/chat', wrap(async (req, res) => {
+    const body = req.body ?? {};
+    const role = normalizeRole(body.role);
+    const identity = body.user && typeof body.user === 'object' ? body.user : {};
+    const context = await copilotContext(role, identity, today(req));
+    const result = await askCopilot({ role, message: body.message, history: body.history, context, language: body.language });
+    res.json({ ...result, asOf: today(req), contextSummary: role === 'citizen' ? `${context.applications.length} application(s)` : role === 'officer' ? `${context.radar.length} open file(s)` : `${context.offices.length} office aggregate(s)` });
+  }));
 
   // ---- Registry ----
   app.get('/api/rts/sources', (_req, res) => res.json(RTS_SOURCES));
@@ -76,9 +143,20 @@ export function createApp({ pool, demoMode = false, now = () => new Date().toISO
       return res.json({
         ...result,
         provider: 'demo-proxy',
+        verificationStatus: result.verificationStatus,
         fields: { ...baseFields, ackNo: baseFields.acknowledgementNumber, receivedOn: baseFields.applicationDate, serviceId },
         missingFields: result.documentType === 'ACKNOWLEDGEMENT_SLIP' ? [] : ['acknowledgementNumber', 'applicationDate', 'serviceName'],
         warnings: [...(result.warnings || []), 'Demo verification was used for this slip. Confirm the extracted fields before starting the clock.']
+      });
+    }
+    if (demoMode) {
+      return res.json({
+        documentType: 'UNCLEAR',
+        verificationStatus: 'REJECTED_DEMO_UNKNOWN',
+        fields: { acknowledgementNumber: null, applicationDate: null, serviceName: null, issuingDepartment: null, issuingJurisdiction: null, ackNo: null, receivedOn: null, serviceId: null },
+        missingFields: ['acknowledgementNumber', 'applicationDate', 'serviceName'],
+        warnings: ['Demo proxy could not match this upload to one of the four supplied acknowledgement-slip fixtures.', 'No deadline clock was started.'],
+        provider: 'demo-proxy', valid: false
       });
     }
 
@@ -140,6 +218,7 @@ export function createApp({ pool, demoMode = false, now = () => new Date().toISO
     res.json({
       ...result,
       provider: result.provider ?? 'unavailable',
+      verificationStatus: result.verificationStatus ?? 'LIVE_READER_UNVERIFIED',
       fields: { ...baseFields, ackNo: baseFields.acknowledgementNumber, receivedOn: baseFields.applicationDate, serviceId },
       missingFields,
       warnings
@@ -351,14 +430,78 @@ export function createApp({ pool, demoMode = false, now = () => new Date().toISO
     const agg = new Map();
     for (const r of rows) {
       const c = await load(r.id); const st = statusOf(c, asOf);
-      const o = agg.get(c.a.office_id) ?? { officeId: c.a.office_id, office: c.a.officeName, district: c.a.district, total: 0, late: 0, atRisk: 0, open: 0, reasons: {} };
+      const o = agg.get(c.a.office_id) ?? { officeId: c.a.office_id, office: c.a.officeName, district: c.a.district, total: 0, late: 0, atRisk: 0, open: 0, reasons: {}, departments: {} };
       o.total++; if (['BREACHED', 'COMPLETED_LATE'].includes(st.state)) o.late++;
       if (st.state === 'AT_RISK') o.atRisk++; if (!c.a.disposed_on) o.open++;
       if (c.a.reason_code && ['BREACHED', 'AT_RISK'].includes(st.state)) o.reasons[c.a.reason_code] = (o.reasons[c.a.reason_code] ?? 0) + 1;
+      const department = c.s.department || 'Other public services';
+      const d = o.departments[department] ?? { total: 0, late: 0, atRisk: 0, open: 0, reasons: {} };
+      d.total++;
+      if (['BREACHED', 'COMPLETED_LATE'].includes(st.state)) d.late++;
+      if (st.state === 'AT_RISK') d.atRisk++;
+      if (!c.a.disposed_on) d.open++;
+      if (c.a.reason_code && ['BREACHED', 'AT_RISK'].includes(st.state)) d.reasons[c.a.reason_code] = (d.reasons[c.a.reason_code] ?? 0) + 1;
+      o.departments[department] = d;
       agg.set(c.a.office_id, o);
     }
     res.json([...agg.values()].map((o) => o.total < K_ANON ? { officeId: o.officeId, office: o.office, district: o.district, suppressed: true, note: `fewer than ${K_ANON} applications` }
-      : { ...o, lateRate: +(o.late / o.total).toFixed(3) }).sort((a, b) => (b.lateRate ?? -1) - (a.lateRate ?? -1)));
+      : { ...o, primaryDepartment: Object.entries(o.departments).sort((a, b) => b[1].total - a[1].total)[0]?.[0] || 'Public services', lateRate: +(o.late / o.total).toFixed(3) }).sort((a, b) => (b.lateRate ?? -1) - (a.lateRate ?? -1)));
+  }));
+
+  // Commission drill-down: only offices meeting k-anonymity can expose masked case-level evidence.
+  app.get('/api/commission/offices/:officeId', wrap(async (req, res) => {
+    const officeId = String(req.params.officeId || '').slice(0, 120);
+    const office = (await pool.query('SELECT id, state_code, district, name, level FROM offices WHERE id = $1', [officeId])).rows[0];
+    if (!office) return res.status(404).json({ error: 'Office not found in the demo directory.' });
+    const ids = (await pool.query('SELECT id FROM applications WHERE office_id = $1 ORDER BY received_on DESC', [officeId])).rows;
+    if (ids.length < K_ANON) return res.status(403).json({ error: 'This office is protected by the k-anonymity privacy threshold; case-level drill-down is unavailable.' });
+
+    const roster = DEMO_USERS.officers.filter((person) => person.officeId === officeId);
+    const applications = [];
+    const reasonCounts = {};
+    const departmentCounts = {};
+    for (const row of ids) {
+      const ctx = await load(row.id);
+      if (!ctx?.s) continue;
+      const clock = statusOf(ctx, today(req));
+      const department = ctx.s.department || 'Other public services';
+      const departmentRow = departmentCounts[department] ?? { applications: 0, delayed: 0, atRisk: 0 };
+      departmentRow.applications++;
+      if (['BREACHED', 'COMPLETED_LATE'].includes(clock.state)) departmentRow.delayed++;
+      if (clock.state === 'AT_RISK') departmentRow.atRisk++;
+      departmentCounts[department] = departmentRow;
+      if (ctx.a.reason_code && ['BREACHED', 'COMPLETED_LATE', 'AT_RISK'].includes(clock.state)) {
+        reasonCounts[ctx.a.reason_code] = (reasonCounts[ctx.a.reason_code] || 0) + 1;
+      }
+      if (!['BREACHED', 'COMPLETED_LATE', 'AT_RISK'].includes(clock.state)) continue;
+      const hash = [...String(ctx.a.ack_no)].reduce((sum, char) => sum + char.charCodeAt(0), 0);
+      const demoOfficer = roster.length ? roster[hash % roster.length] : null;
+      const ack = String(ctx.a.ack_no || '');
+      applications.push({
+        id: ctx.a.id,
+        reference: ack ? `••••${ack.slice(-4)}` : 'Reference withheld',
+        service: ctx.s.name,
+        department,
+        receivedOn: ctx.a.received_on,
+        dueDate: clock.dueDate,
+        status: clock.state,
+        daysLate: clock.daysLate || 0,
+        daysLeft: clock.remaining,
+        reasonCode: ctx.a.reason_code || null,
+        officer: demoOfficer ? { name: demoOfficer.name, officerId: demoOfficer.officerId, designation: ctx.s.designated_officer || 'Designated Officer', synthetic: true } : { name: 'Designated Officer (role only)', officerId: null, designation: ctx.s.designated_officer || 'Designated Officer', synthetic: true }
+      });
+    }
+    applications.sort((a, b) => (b.daysLate || 0) - (a.daysLate || 0) || String(a.dueDate).localeCompare(String(b.dueDate)));
+    res.json({
+      office: { id: office.id, name: office.name, district: office.district, stateCode: office.state_code, level: office.level },
+      synthetic: true,
+      privacy: { k: K_ANON, cohortSize: ids.length, referencesMasked: true, citizenNamesExcluded: true },
+      departments: departmentCounts,
+      reasonCounts,
+      delayedApplications: applications,
+      contact: { mode: 'DEMO_DRAFT_ONLY', sent: false, note: 'Officer names are synthetic demo profiles. No live telephone, email, messaging directory, or delivery integration is configured.' },
+      asOf: today(req)
+    });
   }));
 
   // ---- Audit ----

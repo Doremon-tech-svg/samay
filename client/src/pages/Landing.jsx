@@ -47,6 +47,18 @@ const STATE_RULES = {
     penalty: '₹250 per day (up to ₹5,000 maximum)',
     multiplier: 1.1,
   },
+  'Gujarat': {
+    act: 'Gujarat Digital Gujarat notified-service framework',
+    section: 'State notified-service appeal path',
+    penalty: 'Shown from the applicable service record',
+    multiplier: 1.0,
+  },
+  'Tamil Nadu': {
+    act: 'Tamil Nadu Revenue e-Sevai service catalogue',
+    section: 'Revenue service escalation path',
+    penalty: 'Shown from the applicable service record',
+    multiplier: 1.0,
+  },
   'Rajasthan': {
     act: 'Rajasthan Guaranteed Delivery of Public Services Act, 2011',
     section: 'Section 6 First Appeal',

@@ -88,7 +88,7 @@ export async function prepareVisionImage(file) {
       reader.onerror = () => reject(new Error('Could not read the compressed photo.'));
       reader.readAsDataURL(blob);
     });
-    return { imageBase64: String(dataUrl).split(',')[1], mimeType: 'image/jpeg' };
+    return { imageBase64: String(dataUrl).split(',')[1], mimeType: 'image/jpeg', fileName: file.name || '' };
   } finally {
     bitmap.close?.();
   }

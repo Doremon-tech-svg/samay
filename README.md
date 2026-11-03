@@ -103,6 +103,8 @@ Stack: PostgreSQL, Express (Node 20+), React 18 with Vite, `pg`, `vite-plugin-pw
 
 ## 4. Setup
 
+For the four supplied acknowledgement-slip walkthrough, deterministic mock verification, role chooser, and dense office demo, see [`docs/JUDGE_DEMO.md`](./docs/JUDGE_DEMO.md). The source-backed rule notes are in [`docs/demo-rules-sources.md`](./docs/demo-rules-sources.md).
+
 ### 4.0 Prerequisites
 - **Node.js 20 or newer** (developed and tested on Node 22) and npm. Check with `node -v`.
 - **Git**.

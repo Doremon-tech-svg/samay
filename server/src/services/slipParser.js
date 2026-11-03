@@ -19,7 +19,11 @@ export function parseAckNo(text) {
 }
 export function matchService(text, services) {
   const t = text.toLowerCase();
-  const hits = services.filter((s) => t.includes(s.name.toLowerCase()) || t.includes(s.service_key.replace(/-/g, ' ')));
+  const ack = parseAckNo(text);
+  const prefix = ack?.match(/^([A-Z]{2})/i)?.[1]?.toUpperCase();
+  const scoped = prefix ? services.filter((s) => s.state_code === prefix) : services;
+  const candidates = scoped.length ? scoped : services;
+  const hits = candidates.filter((s) => t.includes(s.name.toLowerCase()) || t.includes(s.service_key.replace(/-/g, ' ')));
   return hits.length === 1 ? hits[0] : null; // ambiguous or none: ask the user to choose
 }
 export function parseSlip(text, services) {

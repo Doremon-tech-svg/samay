@@ -16,12 +16,38 @@ const TABS = [
   { id: 'compiler', icon: IconCpu, key: 'navCompiler' },
 ];
 
-const ASSISTANT_PROMPTS = [
-  { label: 'Check deadline', text: 'What is my statutory deadline and what should I do next?' },
-  { label: 'Appeal help', text: 'Help me draft an appeal and explain the next authority.' },
-  { label: 'Slip issues', text: 'Can you help validate a citizen acknowledgement slip or flag mismatches?' },
-  { label: 'Officer view', text: 'Summarise the risk queue and show which applications need urgent attention.' },
-];
+const ASSISTANT_PROFILES = {
+  citizen: {
+    title: 'Citizen Copilot',
+    subtitle: 'Your deadlines, slip checks, and appeal next steps',
+    greeting: 'I can explain your tracked deadline, check what the slip fields mean, and guide you to an appeal after a breach.',
+    prompts: [
+      { label: 'My deadline', text: 'Summarise my tracked applications and tell me which deadline needs attention.' },
+      { label: 'Appeal help', text: 'Is any of my application late, and what should I do next?' },
+      { label: 'Slip check', text: 'What should I verify before I start a clock from my acknowledgement slip?' }
+    ]
+  },
+  officer: {
+    title: 'Desk Copilot',
+    subtitle: 'Triage your office docket without changing the legal clock',
+    greeting: 'I can prioritise this office docket, explain risk signals, and suggest evidence-based operational next steps.',
+    prompts: [
+      { label: 'Risk queue', text: 'Summarise the most urgent files in my office and why they need attention.' },
+      { label: 'Bottlenecks', text: 'Which bottleneck reasons are appearing in my risk queue?' },
+      { label: 'Today’s action', text: 'Give me a practical three-step plan for this office today.' }
+    ]
+  },
+  commission: {
+    title: 'Commission Copilot',
+    subtitle: 'Read office aggregates with privacy safeguards',
+    greeting: 'I can explain visible office-level trends, late rates, and bottleneck signals without exposing small cohorts.',
+    prompts: [
+      { label: 'Office trends', text: 'Summarise the visible office-level performance picture.' },
+      { label: 'Late rates', text: 'Which visible office needs the most follow-up, and why?' },
+      { label: 'Privacy check', text: 'What can I safely conclude from this dashboard without identifying citizens?' }
+    ]
+  }
+};
 
 const addDays = (iso, n) => new Date(Date.parse(iso) + n * 86400000).toISOString().slice(0, 10);
 const todayIso = () => new Date().toISOString().slice(0, 10);
@@ -107,15 +133,42 @@ export default function App() {
   const [lang, setLang] = useState(() => localStorage.getItem('samay.lang') || 'en');
   const [online, setOnline] = useState(typeof navigator === 'undefined' ? true : navigator.onLine);
   const [tick, setTick] = useState(0);
-  const [assistantOpen, setAssistantOpen] = useState(true);
-  const [assistantPrompt, setAssistantPrompt] = useState('Check deadline');
+  const [assistantOpen, setAssistantOpen] = useState(false);
+  const [assistantPrompt, setAssistantPrompt] = useState('');
+  const [assistantMessages, setAssistantMessages] = useState([]);
+  const [assistantInput, setAssistantInput] = useState('');
+  const [assistantBusy, setAssistantBusy] = useState(false);
+  const assistantRole = user?.role === 'officer' || user?.role === 'commission' ? user.role : 'citizen';
+  const assistantProfile = ASSISTANT_PROFILES[assistantRole];
 
-  const assistantReply = {
-    'Check deadline': 'Your deadline is tracked from the acknowledgement date and official state rules. If the application is nearing the final third, the system highlights it as at-risk before any breach reaches the appellate chain.',
-    'Appeal help': 'Start by confirming the application ID, service name, and due date. If the deadline has already breached, the app can prepare the first Section 8 appeal to the designated appellate authority.',
-    'Slip issues': 'The service should match the slip exactly: acknowledgement number, date, office, and jurisdiction. If any field mismatches, mark it as a false or incomplete slip before creating the clock.',
-    'Officer view': 'The officer dashboard prioritises files by legal risk: breached applications first, then at-risk items approaching statutory limits, then on-time files.'
-  }[assistantPrompt] ?? 'I can help with deadline checks, appeals, slip validation, and officer risk triage.';
+  useEffect(() => {
+    setAssistantMessages([{ role: 'assistant', content: assistantProfile.greeting }]);
+    setAssistantPrompt('');
+    setAssistantInput('');
+  }, [assistantRole]);
+
+  const sendAssistantMessage = async (preset) => {
+    const text = String(preset || assistantInput).trim();
+    if (!text || assistantBusy) return;
+    const nextMessage = { role: 'user', content: text };
+    setAssistantInput('');
+    setAssistantMessages((items) => [...items, nextMessage]);
+    setAssistantBusy(true);
+    try {
+      const response = await api.copilot({
+        role: assistantRole,
+        message: text,
+        history: assistantMessages,
+        user,
+        language: lang
+      });
+      setAssistantMessages((items) => [...items, { role: 'assistant', content: response.answer, provider: response.provider }]);
+    } catch (error) {
+      setAssistantMessages((items) => [...items, { role: 'assistant', content: error.message || 'Copilot is unavailable. Use the relevant dashboard controls and try again.' }]);
+    } finally {
+      setAssistantBusy(false);
+    }
+  };
 
   useEffect(() => {
     if (lang === 'en' || typeof document === 'undefined') return;
@@ -257,9 +310,9 @@ export default function App() {
             </div>
           </div>
           <div className="sim-actions">
-            <button onClick={() => go(addDays(date, 1))}>+1d</button>
-            <button onClick={() => go(addDays(date, 5))}>+5d</button>
-            <button onClick={() => go(addDays(date, 15))}>+15d ⚠</button>
+            <button title="Advance the demo clock by one day" onClick={() => go(addDays(date, 1))}>+1 day</button>
+            <button title="Advance the demo clock by five days" onClick={() => go(addDays(date, 5))}>+5 days</button>
+            <button title="Advance the demo clock to demonstrate a missed deadline" onClick={() => go(addDays(date, 15))}>Simulate delay</button>
             <button className="reset-btn" onClick={() => go(todayIso())}>{t(lang, 'today')}</button>
           </div>
         </div>
@@ -268,7 +321,7 @@ export default function App() {
       <main id="main-content" key={tick} role="main">
         {tab === 'citizen' && <Citizen today={date} lang={lang} online={online} />}
         {tab === 'officer' && <Officer />}
-        {tab === 'commission' && <Commission />}
+        {tab === 'commission' && <Commission lang={lang} />}
         {tab === 'compiler' && <Compiler />}
       </main>
 
@@ -282,29 +335,49 @@ export default function App() {
           <aside className="ai-helper-panel" aria-label="AI helper assistant">
             <div className="ai-helper-header">
               <div>
-                <div className="ai-helper-badge">AI helper</div>
-                <h3>SAMAY Copilot</h3>
+                <div className="ai-helper-badge">{assistantRole} workspace</div>
+                <h3>{assistantProfile.title}</h3>
+                <p className="ai-helper-subtitle">{assistantProfile.subtitle}</p>
               </div>
               <button type="button" className="ai-helper-close" onClick={() => setAssistantOpen(false)} aria-label="Close AI helper">×</button>
             </div>
 
             <div className="ai-helper-prompts">
-              {ASSISTANT_PROMPTS.map((item) => (
+              {assistantProfile.prompts.map((item) => (
                 <button
                   key={item.label}
                   type="button"
                   className={assistantPrompt === item.label ? 'selected' : ''}
-                  onClick={() => setAssistantPrompt(item.label)}
+                  onClick={() => { setAssistantPrompt(item.label); sendAssistantMessage(item.text); }}
+                  disabled={assistantBusy}
                 >
                   {item.label}
                 </button>
               ))}
             </div>
 
-            <div className="ai-helper-response">
-              <strong>Suggested response</strong>
-              <p>{assistantReply}</p>
+            <div className="ai-helper-messages" aria-live="polite">
+              {assistantMessages.map((item, index) => (
+                <div key={`${item.role}-${index}`} className={`ai-helper-message ${item.role}`}>
+                  <span className="ai-helper-message-label">{item.role === 'user' ? 'You' : 'Copilot'}</span>
+                  <p>{item.content}</p>
+                </div>
+              ))}
+              {assistantBusy && <div className="ai-helper-typing">Copilot is checking the approved context…</div>}
             </div>
+
+            <form className="ai-helper-compose" onSubmit={(event) => { event.preventDefault(); sendAssistantMessage(); }}>
+              <input
+                value={assistantInput}
+                onChange={(event) => setAssistantInput(event.target.value)}
+                placeholder={assistantRole === 'citizen' ? 'Ask about your deadline…' : assistantRole === 'officer' ? 'Ask about the risk queue…' : 'Ask about office trends…'}
+                maxLength={1200}
+                disabled={assistantBusy}
+                aria-label="Ask SAMAY Copilot"
+              />
+              <button type="submit" className="primary" disabled={assistantBusy || !assistantInput.trim()} aria-label="Send message">{assistantBusy ? '…' : 'Send'}</button>
+            </form>
+            <div className="ai-helper-disclaimer">Demo guidance uses approved context and never replaces officer, commission, or legal review.</div>
           </aside>
         )}
       </div>

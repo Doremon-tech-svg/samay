@@ -29,6 +29,8 @@ async function ensureDatabaseReady(p) {
       await seedDemoApplications(p);
       console.log('Database successfully initialized with schema, registry, and synthetic data!');
     } else {
+      // Additive registry upgrade: keep judge-demo services and offices available after the original scaffold was seeded.
+      await seedRegistry(p);
       const { rows: countRows } = await p.query('SELECT COUNT(*) AS c FROM services');
       if (Number(countRows[0]?.c) === 0) {
         console.log('Services table empty. Seeding registry and synthetic data...');

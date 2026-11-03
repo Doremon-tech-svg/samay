@@ -1,374 +1,206 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { api } from '../api.js';
-import { StatCard } from '../ui.jsx';
-import { IconMap, IconDownload, IconShield, IconBuilding, IconAlert } from '../Icons.jsx';
+import { IconMap, IconDownload, IconShield, IconBuilding, IconAlert, IconArrowRight, IconCheck } from '../Icons.jsx';
 
-export default function Commission() {
-  const [rows, setRows]       = useState([]);
+const REASONS = {
+  OFFICER_VACANCY: { label: 'Officer vacancy / capacity gap', action: 'Review vacancy coverage, temporary charge arrangements, and workload distribution for this service desk.' },
+  AWAITING_VERIFICATION: { label: 'Field verification pending', action: 'Check whether field visits can be batched, assign a due date for the verification report, and surface missing instructions early.' },
+  FILE_MOVEMENT: { label: 'Inter-department file movement', action: 'Map the hand-off points, set a named receiving desk, and use a shared movement register with escalation after each missed hand-off.' },
+  APPLICANT_DOCUMENTS: { label: 'Applicant documents pending', action: 'Send one clear, consolidated document request with a response deadline and record the applicant-facing notice.' }
+};
+const reasonLabel = (code) => REASONS[code]?.label || String(code || 'Reason not recorded').replaceAll('_', ' ').toLowerCase();
+const pct = (value) => `${(Number(value || 0) * 100).toFixed(1)}%`;
+const safe = (value) => String(value ?? '').replace(/[\r\n]+/g, ' ').trim();
+
+export default function Commission({ lang = 'en' }) {
+  const [rows, setRows] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [viewMode, setViewMode] = useState('tiles'); // 'tiles' | 'table'
+  const [error, setError] = useState('');
+  const [viewMode, setViewMode] = useState('tiles');
+  const [departmentFilter, setDepartmentFilter] = useState('All departments');
+  const [selectedOffice, setSelectedOffice] = useState(null);
+  const [detail, setDetail] = useState(null);
+  const [detailBusy, setDetailBusy] = useState(false);
+  const [aiReply, setAiReply] = useState('');
+  const [aiProvider, setAiProvider] = useState('');
+  const [aiBusy, setAiBusy] = useState(false);
+  const [contact, setContact] = useState(null);
+  const [contactCopied, setContactCopied] = useState(false);
+  const [search, setSearch] = useState('');
 
-  useEffect(() => {
-    api.commission()
-      .then(setRows)
-      .finally(() => setLoading(false));
-  }, []);
+  const refresh = async () => {
+    setLoading(true); setError('');
+    try { setRows(await api.commission()); }
+    catch (e) { setError(e.message || 'Could not load Commission overview.'); }
+    finally { setLoading(false); }
+  };
+  useEffect(() => { refresh(); }, []); // eslint-disable-line
 
   const visibleRows = rows.filter((r) => !r.suppressed);
-  const topLate     = [...visibleRows].sort((a, b) => b.lateRate - a.lateRate)[0];
-  const totalApps   = visibleRows.reduce((s, r) => s + r.total, 0);
-  const totalLate   = visibleRows.reduce((s, r) => s + r.late, 0);
+  const departmentStats = useMemo(() => {
+    const result = new Map();
+    visibleRows.forEach((office) => Object.entries(office.departments || { [office.primaryDepartment || 'Public services']: { total: office.total, late: office.late, atRisk: office.atRisk, open: office.open } }).forEach(([name, stats]) => {
+      const d = result.get(name) || { name, total: 0, late: 0, atRisk: 0, open: 0, offices: 0, reasons: {} };
+      d.total += stats.total || 0; d.late += stats.late || 0; d.atRisk += stats.atRisk || 0; d.open += stats.open || 0; d.offices++;
+      Object.entries(stats.reasons || {}).forEach(([code, count]) => { d.reasons[code] = (d.reasons[code] || 0) + count; });
+      result.set(name, d);
+    }));
+    return [...result.values()].sort((a, b) => b.late - a.late || b.total - a.total);
+  }, [visibleRows]);
+  const topLate = [...visibleRows].sort((a, b) => b.lateRate - a.lateRate)[0];
+  const totalApps = visibleRows.reduce((sum, r) => sum + r.total, 0);
+  const totalLate = visibleRows.reduce((sum, r) => sum + r.late, 0);
+  const totalRisk = visibleRows.reduce((sum, r) => sum + r.atRisk, 0);
   const lateRatePct = totalApps ? ((totalLate / totalApps) * 100).toFixed(1) : '0.0';
-
-  // Systemic bottleneck aggregation
   const bottleneckCounts = {};
-  for (const r of visibleRows) {
-    if (r.reasons) {
-      for (const [k, count] of Object.entries(r.reasons)) {
-        bottleneckCounts[k] = (bottleneckCounts[k] || 0) + count;
-      }
-    }
-  }
-  const totalBottlenecks = Object.values(bottleneckCounts).reduce((a, b) => a + b, 0) || 1;
+  visibleRows.forEach((r) => Object.entries(r.reasons || {}).forEach(([key, count]) => { bottleneckCounts[key] = (bottleneckCounts[key] || 0) + count; }));
+  const totalBottlenecks = Math.max(1, Object.values(bottleneckCounts).reduce((a, b) => a + b, 0));
+  const filteredRows = visibleRows.filter((row) => (departmentFilter === 'All departments' || Object.hasOwn(row.departments || {}, departmentFilter) || row.primaryDepartment === departmentFilter)
+    && `${row.office} ${row.district} ${row.primaryDepartment || ''}`.toLowerCase().includes(search.toLowerCase()));
 
-  const BOTTLENECK_NAMES = {
-    OFFICER_VACANCY:       'Designated Officer Vacancy',
-    AWAITING_VERIFICATION: 'Awaiting Field Verification',
-    FILE_MOVEMENT:         'Inter-Department File Movement',
-    APPLICANT_DOCUMENTS:   'Pending Applicant Documents'
+  const openOffice = async (office) => {
+    setSelectedOffice(office); setDetail(null); setAiReply(''); setAiProvider(''); setContact(null); setError(''); setDetailBusy(true);
+    try { setDetail(await api.commissionOffice(office.officeId)); }
+    catch (e) { setError(e.message || 'Office drill-down is unavailable.'); }
+    finally { setDetailBusy(false); }
+  };
+
+  const askAI = async () => {
+    if (!detail || aiBusy) return;
+    setAiBusy(true); setAiReply('');
+    const reasonSummary = Object.entries(detail.reasonCounts || {}).map(([code, count]) => `${reasonLabel(code)} (${count}; ${code})`).join('; ') || 'No coded bottleneck is present in this office cohort.';
+    const delayedSummary = (detail.delayedApplications || []).slice(0, 10).map((item) => `${item.reference} ${item.service} ${item.status} due ${item.dueDate}; reason ${item.reasonCode || 'not recorded'}`).join(' | ') || 'No delayed or at-risk files were returned.';
+    const message = `Commission improvement review for ${detail.office.name}, ${detail.office.district}, ${detail.office.stateCode}. Aggregate only: ${detail.privacy.cohortSize} applications, ${selectedOffice.late} late decisions, ${selectedOffice.atRisk} at risk. Bottlenecks: ${reasonSummary}. Masked delayed case sample: ${delayedSummary}. Give a balanced, evidence-based 3-step improvement plan. Do not blame an individual, infer citizen identities, invent facts, or recommend punishment without investigation.`;
+    try {
+      const result = await api.copilot({ role: 'commission', message, history: [], language: lang });
+      setAiReply(result.answer); setAiProvider(result.provider || 'demo-fallback');
+    } catch (e) { setAiReply(e.message || 'AI recommendations are unavailable. Use the reason-based actions shown below.'); setAiProvider('unavailable'); }
+    finally { setAiBusy(false); }
+  };
+
+  const prepareContact = (item) => {
+    const officer = item.officer || {};
+    const body = `To: ${safe(officer.name)} — ${safe(officer.designation)}\nSubject: Commission follow-up on ${safe(item.reference)}\n\nPlease provide a factual status update for the ${safe(item.service)} application (reference ${safe(item.reference)}), received ${safe(item.receivedOn)}, due ${safe(item.dueDate)}. The current SAMAY demo record shows ${safe(item.status)}${item.reasonCode ? ` with the recorded reason “${reasonLabel(item.reasonCode)}”` : ' with no coded delay reason'}.\n\nPlease confirm the current processing stage, any outstanding dependency, the next responsible desk, and the expected completion date. If the recorded reason is inaccurate, please provide the correction and supporting record.\n\nThis is a demo-only draft for review; it has not been sent.`;
+    setContact({ officer, item, body }); setContactCopied(false);
+  };
+  const copyContact = async () => {
+    if (!contact) return;
+    try { await navigator.clipboard.writeText(contact.body); setContactCopied(true); }
+    catch { setError('Clipboard access is unavailable. Select and copy the demo draft manually.'); }
   };
 
   const exportCsv = () => {
-    const headers = ['Office', 'District', 'Total Applications', 'Late Disposals', 'Late Rate %', 'At Risk', 'Open Applications'];
+    const headers = ['Office', 'District', 'Department', 'Total Applications', 'Late Decisions', 'Late Rate %', 'At Risk', 'Open Applications'];
     const csvRows = [headers.join(',')];
-
-    for (const r of rows) {
-      if (r.suppressed) {
-        csvRows.push(`"${r.office}","${r.district}","<5 (Suppressed for Privacy)","—","—","—","—"`);
-      } else {
-        csvRows.push(`"${r.office}","${r.district}",${r.total},${r.late},${(r.lateRate * 100).toFixed(1)}%,${r.atRisk},${r.open}`);
-      }
-    }
-
-    const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.setAttribute('href', url);
-    link.setAttribute('download', `SAMAY_Commission_Compliance_Report_${new Date().toISOString().slice(0, 10)}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+    for (const r of rows) csvRows.push(r.suppressed
+      ? `"${r.office}","${r.district}","—","<5 (suppressed)","—","—","—","—"`
+      : `"${r.office}","${r.district}","${r.primaryDepartment || ''}",${r.total},${r.late},${pct(r.lateRate)},${r.atRisk},${r.open}`);
+    const link = document.createElement('a'); link.href = URL.createObjectURL(new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' }));
+    link.download = `SAMAY_Commission_Compliance_${new Date().toISOString().slice(0, 10)}.csv`; link.click(); URL.revokeObjectURL(link.href);
   };
 
+  const suggestions = detail ? Object.entries(detail.reasonCounts || {}).sort((a, b) => b[1] - a[1]).slice(0, 4) : [];
+
   return (
-    <section className="card" aria-labelledby="commission-heading">
-      <div className="card-header">
-        <div>
-          <h2 id="commission-heading">
-            <IconMap size={22} color="var(--navy)" />
-            <span>State Commission Accountability Map</span>
-          </h2>
-          <p className="subtitle">
-            Macro-level compliance surveillance for State Right to Public Services Commissions. Automated detection of systemic delays and enforcement tracking.
-          </p>
-        </div>
-
-        <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-          <div style={{
-            display: 'inline-flex',
-            background: '#f1f5f9',
-            padding: 3,
-            borderRadius: 8,
-            border: '1px solid #e2e8f0'
-          }}>
-            <button
-              type="button"
-              onClick={() => setViewMode('tiles')}
-              style={{
-                fontSize: 12,
-                padding: '4px 10px',
-                border: 'none',
-                background: viewMode === 'tiles' ? '#ffffff' : 'transparent',
-                boxShadow: viewMode === 'tiles' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
-                color: viewMode === 'tiles' ? 'var(--navy)' : '#64748b'
-              }}
-            >
-              Heat Tiles
-            </button>
-            <button
-              type="button"
-              onClick={() => setViewMode('table')}
-              style={{
-                fontSize: 12,
-                padding: '4px 10px',
-                border: 'none',
-                background: viewMode === 'table' ? '#ffffff' : 'transparent',
-                boxShadow: viewMode === 'table' ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
-                color: viewMode === 'table' ? 'var(--navy)' : '#64748b'
-              }}
-            >
-              Data Grid
-            </button>
+    <section className="commission-console" aria-labelledby="commission-heading">
+      <header className="commission-hero">
+        <div className="commission-hero-topline"><span className="commission-live-dot" /> COMMISSION OVERSIGHT · SYNTHETIC DEMO DATA</div>
+        <div className="commission-hero-main">
+          <div>
+            <h2 id="commission-heading"><IconMap size={22} /> Accountability & service recovery</h2>
+            <p>Move from a statewide signal to the responsible department, delayed cases, recorded bottlenecks, and a practical recovery plan.</p>
           </div>
+          <button className="commission-export" onClick={exportCsv} disabled={loading || rows.length === 0}><IconDownload size={15} /> Export report</button>
+        </div>
+        <div className="commission-hero-note"><IconShield size={15} /> Case references are masked. Small cohorts stay hidden. Officer identities and contact drafts shown here are demo-only; no messages are sent.</div>
+      </header>
 
-          <button onClick={exportCsv} disabled={loading || rows.length === 0} style={{ fontSize: 12.5 }}>
-            <IconDownload size={14} />
-            <span>Export CSV</span>
+      {error && <div className="commission-error" role="alert"><IconAlert size={16} /> {error}<button onClick={() => setError('')} aria-label="Dismiss">×</button></div>}
+
+      <div className="commission-kpis">
+        <article><span className="commission-kpi-label">Applications monitored</span><strong>{loading ? '—' : totalApps}</strong><small>Across offices meeting privacy threshold</small></article>
+        <article className="delay"><span className="commission-kpi-label">Late decisions</span><strong>{loading ? '—' : totalLate}</strong><small>Completed beyond the service deadline</small></article>
+        <article className="risk"><span className="commission-kpi-label">At-risk right now</span><strong>{loading ? '—' : totalRisk}</strong><small>Approaching or crossing the legal clock</small></article>
+        <article className="rate"><span className="commission-kpi-label">Visible late rate</span><strong>{loading ? '—' : `${lateRatePct}%`}</strong><small>{topLate ? `Highest visible: ${topLate.district}` : 'No visible late decisions'}</small></article>
+      </div>
+
+      <section className="commission-section" aria-labelledby="department-heading">
+        <div className="commission-section-title"><div><span className="commission-section-kicker">01 · FIND THE PATTERN</span><h3 id="department-heading">Choose a department</h3></div><span className="commission-section-help">Departments are clickable filters; choose one to narrow the office list.</span></div>
+        <div className="commission-department-list">
+          <button className={`commission-department-card ${departmentFilter === 'All departments' ? 'selected' : ''}`} onClick={() => setDepartmentFilter('All departments')}>
+            <span className="commission-department-name">All departments</span><strong>{totalApps}</strong><small>{totalLate} late · {departmentStats.length} service groups</small>
           </button>
+          {departmentStats.map((department) => <button key={department.name} className={`commission-department-card ${departmentFilter === department.name ? 'selected' : ''}`} onClick={() => setDepartmentFilter(department.name)}>
+            <span className="commission-department-name">{department.name}</span><strong>{department.total}</strong><small>{department.late} late · {department.offices} visible offices</small>
+            <span className="commission-department-bar"><i style={{ width: `${department.total ? Math.max(2, department.late / department.total * 100) : 0}%` }} /></span>
+          </button>)}
         </div>
-      </div>
+      </section>
 
-      {/* Overview StatCards */}
-      <div style={{ display: 'flex', gap: 14, marginBottom: 20, flexWrap: 'wrap' }}>
-        <StatCard
-          label="Total Applications"
-          value={totalApps}
-          subtext="Processed across monitored offices"
-          color="var(--navy)"
-        />
-        <StatCard
-          label="Statutory Late Decisions"
-          value={totalLate}
-          subtext="Disposed after statutory deadline"
-          color="#dc2626"
-        />
-        <StatCard
-          label="Statewide Late Rate"
-          value={`${lateRatePct}%`}
-          subtext={Number(lateRatePct) > 25 ? 'High statutory delay detected' : 'Acceptable compliance tier'}
-          color={Number(lateRatePct) > 25 ? '#dc2626' : '#059669'}
-          badge={
-            <span style={{
-              fontSize: 11,
-              background: Number(lateRatePct) > 25 ? '#fef2f2' : '#ecfdf5',
-              color: Number(lateRatePct) > 25 ? '#991b1b' : '#047857',
-              padding: '2px 6px',
-              borderRadius: 4,
-              fontWeight: 700
-            }}>
-              CAG Audit Benchmark
-            </span>
-          }
-        />
-        <StatCard
-          label="Highest Delay Office"
-          value={topLate ? `${(topLate.lateRate * 100).toFixed(0)}%` : '—'}
-          subtext={topLate?.office ?? 'No delay'}
-          color="#d97706"
-        />
-      </div>
-
-      {/* Systemic Bottleneck Breakdown Chart (P1-6) */}
-      <div style={{
-        background: '#f8fafc',
-        border: '1px solid #e2e8f0',
-        borderRadius: 12,
-        padding: '16px 20px',
-        marginBottom: 24
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-          <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--navy)' }}>
-            Systemic Delay Attribution (Root Cause Breakdown)
+      <section className="commission-section" aria-labelledby="office-heading">
+        <div className="commission-section-title"><div><span className="commission-section-kicker">02 · SELECT A UNIT</span><h3 id="office-heading">Office performance</h3></div>
+          <div className="commission-office-tools"><input aria-label="Search offices" value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search district or office" />
+            <div className="commission-view-toggle"><button className={viewMode === 'tiles' ? 'active' : ''} onClick={() => setViewMode('tiles')}>Cards</button><button className={viewMode === 'table' ? 'active' : ''} onClick={() => setViewMode('table')}>Table</button></div>
+            <button className="commission-refresh" onClick={refresh} disabled={loading}>Refresh</button>
           </div>
-          <span style={{ fontSize: 11.5, color: '#64748b' }}>
-            Reported by Designated Officers in field
-          </span>
         </div>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-          {Object.entries(BOTTLENECK_NAMES).map(([key, label]) => {
-            const count = bottleneckCounts[key] || 0;
-            const pct = Math.round((count / totalBottlenecks) * 100);
-            return (
-              <div key={key}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, marginBottom: 3 }}>
-                  <span style={{ color: '#334155', fontWeight: 500 }}>{label}</span>
-                  <span style={{ color: '#64748b', fontWeight: 600 }}>{count} cases ({pct}%)</span>
-                </div>
-                <div style={{ height: 6, background: '#e2e8f0', borderRadius: 4, overflow: 'hidden' }}>
-                  <div style={{
-                    width: `${pct}%`,
-                    height: '100%',
-                    background: key === 'OFFICER_VACANCY' ? '#dc2626' : (key === 'AWAITING_VERIFICATION' ? '#d97706' : '#0284c7')
-                  }} />
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-
-      {loading && (
-        <div style={{ textAlign: 'center', padding: 24, color: '#64748b' }}>
-          Aggregating state commission telemetry…
-        </div>
-      )}
-
-      {/* Visual Heat Tiles View (P1-6) */}
-      {viewMode === 'tiles' && !loading && (
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
-            <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--navy)' }}>
-              Office Compliance Heat Grid
-            </span>
-            <span style={{ fontSize: 11.5, color: '#64748b', display: 'flex', alignItems: 'center', gap: 4 }}>
-              <IconShield size={13} color="#059669" />
-              k-anonymity (k ≥ 5) active for privacy protection
-            </span>
-          </div>
-
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-            gap: 16
-          }}>
-            {rows.map((o) => {
-              if (o.suppressed) {
-                return (
-                  <div key={o.officeId} style={{
-                    background: '#f8fafc',
-                    border: '1px dashed #cbd5e1',
-                    borderRadius: 12,
-                    padding: 16,
-                    color: '#64748b'
-                  }}>
-                    <strong style={{ fontSize: 14, color: '#475569', display: 'block', marginBottom: 4 }}>
-                      {o.office}
-                    </strong>
-                    <span style={{ fontSize: 12 }}>{o.district}</span>
-                    <div style={{ fontSize: 11, background: '#e2e8f0', color: '#475569', padding: '3px 8px', borderRadius: 4, marginTop: 8, display: 'inline-block' }}>
-                      Privacy Protected ({o.note})
-                    </div>
-                  </div>
-                );
-              }
-
-              const isHighLate = o.lateRate > 0.3;
-              const isMedLate  = o.lateRate > 0.15;
-              const borderColor = isHighLate ? '#fca5a5' : (isMedLate ? '#fde68a' : '#a7f3d0');
-              const barColor   = isHighLate ? '#dc2626' : (isMedLate ? '#d97706' : '#059669');
-
-              return (
-                <div key={o.officeId} style={{
-                  background: '#ffffff',
-                  border: `1px solid ${borderColor}`,
-                  borderTop: `4px solid ${barColor}`,
-                  borderRadius: 12,
-                  padding: 18,
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.03)',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 10
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
-                    <div>
-                      <strong style={{ fontSize: 15, color: 'var(--navy)', display: 'block' }}>
-                        {o.office}
-                      </strong>
-                      <span style={{ fontSize: 12, color: '#64748b' }}>{o.district}</span>
-                    </div>
-
-                    <span style={{
-                      fontSize: 14,
-                      fontWeight: 800,
-                      color: barColor,
-                      background: isHighLate ? '#fef2f2' : (isMedLate ? '#fffbeb' : '#ecfdf5'),
-                      padding: '3px 8px',
-                      borderRadius: 6
-                    }}>
-                      {(o.lateRate * 100).toFixed(1)}% late
-                    </span>
-                  </div>
-
-                  <div style={{ height: 6, background: '#f1f5f9', borderRadius: 3, overflow: 'hidden' }}>
-                    <div style={{ width: `${Math.min(100, o.lateRate * 100)}%`, height: '100%', background: barColor }} />
-                  </div>
-
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12, color: '#475569', borderTop: '1px solid #f1f5f9', paddingTop: 8 }}>
-                    <span>Total: <strong>{o.total}</strong></span>
-                    <span>Late: <strong style={{ color: o.late > 0 ? '#dc2626' : 'inherit' }}>{o.late}</strong></span>
-                    <span>Open: <strong>{o.open}</strong></span>
-                    <span>At Risk: <strong style={{ color: o.atRisk > 0 ? '#d97706' : 'inherit' }}>{o.atRisk}</strong></span>
-                  </div>
-                </div>
-              );
+        <p className="commission-caption"><IconShield size={13} /> Offices with fewer than 5 demo records are shown as privacy-protected and cannot be opened.</p>
+        {loading ? <div className="commission-loading">Preparing anonymized service-performance view…</div> : viewMode === 'tiles' ? (
+          <div className="commission-office-grid">
+            {filteredRows.map((office) => {
+              const heat = office.lateRate >= .35 ? 'high' : office.lateRate >= .15 ? 'medium' : 'low';
+              return <button key={office.officeId} className={`commission-office-card ${heat} ${selectedOffice?.officeId === office.officeId ? 'selected' : ''}`} onClick={() => openOffice(office)}>
+                <span className="commission-office-head"><span><b>{office.office}</b><small>{office.district} · {office.primaryDepartment}</small></span><strong>{pct(office.lateRate)} late</strong></span>
+                <span className="commission-office-track"><i style={{ width: `${Math.min(100, Math.max(1, office.lateRate * 100))}%` }} /></span>
+                <span className="commission-office-stats"><span>{office.total} tracked</span><span>{office.late} late</span><span>{office.atRisk} at risk</span></span>
+                <span className="commission-open-label">Open accountability details <IconArrowRight size={14} /></span>
+              </button>;
             })}
+            {rows.filter((r) => r.suppressed && (departmentFilter === 'All departments' || r.primaryDepartment === departmentFilter) && `${r.office} ${r.district}`.toLowerCase().includes(search.toLowerCase())).map((office) => <article key={office.officeId} className="commission-office-card suppressed"><span><b>{office.office}</b><small>{office.district}</small></span><span className="commission-privacy-pill"><IconShield size={12} /> Protected · k ≥ 5</span><small>Case-level details hidden to protect small cohorts.</small></article>)}
+            {!filteredRows.length && !rows.some((r) => r.suppressed) && <p className="commission-empty">No offices match this filter.</p>}
           </div>
-        </div>
-      )}
+        ) : (
+          <div className="commission-table-wrap"><table><thead><tr><th>Office</th><th>District</th><th>Department</th><th>Cases</th><th>Late</th><th>Late rate</th><th>At risk</th><th /></tr></thead><tbody>
+            {filteredRows.map((office) => <tr key={office.officeId}><td><button className="commission-table-link" onClick={() => openOffice(office)}>{office.office}</button></td><td>{office.district}</td><td>{office.primaryDepartment}</td><td>{office.total}</td><td>{office.late}</td><td>{pct(office.lateRate)}</td><td>{office.atRisk}</td><td><button className="commission-small-action" onClick={() => openOffice(office)}>Inspect</button></td></tr>)}
+            {rows.filter((r) => r.suppressed).map((office) => <tr key={office.officeId}><td>{office.office}</td><td>{office.district}</td><td colSpan="6">Protected by privacy threshold ({office.note})</td></tr>)}
+          </tbody></table></div>
+        )}
+      </section>
 
-      {/* Detailed Accountability Data Table */}
-      {viewMode === 'table' && !loading && (
-        <div className="table-wrap" role="region" aria-label="Commission accountability table">
-          <table>
-            <thead>
-              <tr>
-                <th scope="col">Office Name</th>
-                <th scope="col">District</th>
-                <th scope="col">Total Apps</th>
-                <th scope="col">Statutory Late</th>
-                <th scope="col">Late Rate %</th>
-                <th scope="col">At Risk</th>
-                <th scope="col">Open Pending</th>
-                <th scope="col">Primary Bottlenecks</th>
-              </tr>
-            </thead>
-            <tbody>
-              {rows.map((o) =>
-                o.suppressed ? (
-                  <tr key={o.officeId}>
-                    <td><strong>{o.office}</strong></td>
-                    <td>{o.district}</td>
-                    <td colSpan="6" style={{ color: '#64748b', fontStyle: 'italic', fontSize: 12.5 }}>
-                      Protected by k-anonymity privacy shield ({o.note})
-                    </td>
-                  </tr>
-                ) : (
-                  <tr key={o.officeId}>
-                    <td><strong style={{ color: 'var(--navy)' }}>{o.office}</strong></td>
-                    <td>{o.district}</td>
-                    <td>{o.total}</td>
-                    <td>
-                      <span style={{ fontWeight: o.late > 0 ? 700 : 400, color: o.late > 0 ? '#dc2626' : 'inherit' }}>
-                        {o.late}
-                      </span>
-                    </td>
-                    <td>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <span style={{ fontWeight: 700, color: o.lateRate > 0.25 ? '#dc2626' : '#059669', fontSize: 13 }}>
-                          {(o.lateRate * 100).toFixed(1)}%
-                        </span>
-                        <div style={{ width: 50, height: 6, background: '#e2e8f0', borderRadius: 3, overflow: 'hidden' }}>
-                          <div style={{
-                            width: `${Math.min(100, o.lateRate * 100)}%`,
-                            height: '100%',
-                            background: o.lateRate > 0.25 ? '#dc2626' : '#059669'
-                          }} />
-                        </div>
-                      </div>
-                    </td>
-                    <td>
-                      {o.atRisk > 0 ? (
-                        <span style={{ color: '#d97706', fontWeight: 700 }}>{o.atRisk}</span>
-                      ) : (
-                        <span style={{ color: '#94a3b8' }}>0</span>
-                      )}
-                    </td>
-                    <td>{o.open}</td>
-                    <td>
-                      <span style={{ fontSize: 12, color: '#475569' }}>
-                        {o.reasons && Object.keys(o.reasons).length > 0
-                          ? Object.entries(o.reasons).map(([k, v]) => `${k.replace('_', ' ')} (${v})`).join(', ')
-                          : '—'}
-                      </span>
-                    </td>
-                  </tr>
-                )
-              )}
-            </tbody>
-          </table>
-        </div>
-      )}
+      <section className="commission-section commission-reasons" aria-labelledby="reason-heading">
+        <div className="commission-section-title"><div><span className="commission-section-kicker">03 · ADDRESS THE CAUSE</span><h3 id="reason-heading">Recorded delay reasons</h3></div><span className="commission-section-help">Reasons are reported codes, not independent findings of fault.</span></div>
+        <div className="commission-reason-list">{Object.entries(REASONS).map(([code, reason]) => {
+          const count = bottleneckCounts[code] || 0; const share = count / totalBottlenecks * 100;
+          return <article key={code} className="commission-reason-row"><div className="commission-reason-head"><span>{reason.label}</span><strong>{count} records <small>{Math.round(share)}%</small></strong></div><div className="commission-reason-track"><i style={{ width: `${share}%` }} /></div><p>{reason.action}</p></article>;
+        })}</div>
+      </section>
+
+      {selectedOffice && <section className="commission-detail" aria-labelledby="detail-heading">
+        <div className="commission-detail-header"><div><span className="commission-section-kicker">04 · OFFICE DRILL-DOWN</span><h3 id="detail-heading">{selectedOffice.office}</h3><p>{selectedOffice.district} · {selectedOffice.primaryDepartment} · {detail?.asOf ? `As of ${detail.asOf}` : 'Loading case evidence'}</p></div><button className="commission-close" onClick={() => { setSelectedOffice(null); setDetail(null); setContact(null); }}>Close details</button></div>
+        {detailBusy ? <div className="commission-loading">Loading masked case evidence and demo officer mapping…</div> : detail && <>
+          <div className="commission-detail-banner"><IconShield size={15} /> {detail.privacy.cohortSize} records meet k ≥ {detail.privacy.k}. Citizen names and full references are excluded from this view.</div>
+          <div className="commission-detail-metrics">{Object.entries(detail.departments || {}).map(([name, stats]) => <div key={name}><small>{name}</small><strong>{stats.delayed} delayed</strong><span>{stats.atRisk} at risk · {stats.applications} total</span></div>)}</div>
+          <div className="commission-detail-columns">
+            <div className="commission-cases"><div className="commission-subhead"><div><h4>Delayed & at-risk applications</h4><p>Sorted by days late; only masked reference numbers are shown.</p></div><span>{detail.delayedApplications.length} cases</span></div>
+              {!detail.delayedApplications.length ? <div className="commission-empty">No delayed or at-risk applications in this office on the selected demo date.</div> : detail.delayedApplications.map((item) => <article className="commission-case" key={item.id}>
+                <div className="commission-case-main"><span className={`commission-case-status ${item.status === 'AT_RISK' ? 'risk' : 'late'}`}>{item.status === 'AT_RISK' ? 'AT RISK' : item.status.replace('COMPLETED_', 'COMPLETED · ')}</span><strong>{item.reference}</strong><span>{item.service} · {item.department}</span></div>
+                <div className="commission-case-meta"><span>Received <b>{item.receivedOn}</b></span><span>Due <b>{item.dueDate}</b></span><span>{item.status === 'AT_RISK' ? `${item.daysLeft ?? 0} days left` : `${item.daysLate} days late`}</span></div>
+                <div className="commission-case-reason"><span><b>Recorded reason:</b> {reasonLabel(item.reasonCode)}</span><span><b>Responsible role:</b> {item.officer.designation}</span></div>
+                <div className="commission-officer-line"><span className="commission-avatar">{item.officer.name.split(' ').slice(-1)[0]?.[0] || 'D'}</span><span><b>{item.officer.name}</b><small>{item.officer.officerId || 'No named demo profile'} · synthetic profile</small></span><button onClick={() => prepareContact(item)}>Prepare follow-up</button></div>
+              </article>)}
+            </div>
+            <aside className="commission-ai-panel"><div className="commission-ai-heading"><span>✦</span><div><h4>Improvement co-pilot</h4><p>Evidence-led suggestions, not automated findings</p></div></div>
+              <div className="commission-ai-reason-suggestions">{suggestions.length ? suggestions.map(([code, count]) => <div key={code}><b>{reasonLabel(code)}</b><p>{REASONS[code]?.action || 'Review the record, validate the cause, and set a measurable follow-up.'}</p><small>{count} matching record(s)</small></div>) : <div><b>No dominant coded reason</b><p>Ask the co-pilot to suggest a review plan based on the aggregate office signal.</p></div>}</div>
+              {aiReply && <div className="commission-ai-answer"><div className="commission-ai-answer-label">{aiProvider === 'demo-fallback' ? 'DEMO SUGGESTION' : 'AI SUGGESTION'}</div><p>{aiReply}</p><small>Provider: {aiProvider}. Validate every recommendation against official records.</small></div>}
+              <button className="commission-ai-button" onClick={askAI} disabled={aiBusy}>{aiBusy ? 'Preparing suggestions…' : 'Ask AI for an improvement plan'} <IconArrowRight size={15} /></button>
+              <small className="commission-ai-disclaimer">AI suggestions are decision support. They do not determine liability or replace an inquiry.</small>
+            </aside>
+          </div>
+          {contact && <section className="commission-contact-draft"><div className="commission-contact-heading"><div><span className="commission-section-kicker">DEMO CONTACT DRAFT · NOT SENT</span><h4>Follow-up for {contact.officer.name}</h4></div><button onClick={() => setContact(null)}>Close</button></div><div className="commission-contact-warning"><IconAlert size={15} /> Synthetic demo officer. No actual email, phone, WhatsApp or government directory is connected.</div><textarea aria-label="Editable contact draft" rows="7" value={contact.body} onChange={(e) => { setContact({ ...contact, body: e.target.value }); setContactCopied(false); }} /><div className="commission-contact-actions"><button onClick={copyContact}><IconCheck size={14} /> {contactCopied ? 'Copied' : 'Copy draft'}</button><span>The draft is editable and stays in this browser until you leave this view.</span></div></section>}
+        </>}
+      </section>}
+
+      <footer className="commission-footnote">Demo data is synthetic and is not a performance assessment of any real department or officer. The Commission view is designed for triage and review; validate source records before taking action.</footer>
     </section>
   );
 }

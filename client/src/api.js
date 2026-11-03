@@ -20,6 +20,8 @@ async function req(method, path, body, timeoutMs = 0) {
   return json;
 }
 export const api = {
+  demoUsers: () => req('GET', '/demo/users'),
+  copilot: (body) => req('POST', '/copilot/chat', body, 30_000),
   rtsSources: () => req('GET', '/rts/sources'),
   services: () => req('GET', '/registry/services?status=approved'),
   drafts: () => req('GET', '/registry/services?status=draft'),
@@ -43,5 +45,6 @@ export const api = {
   sendAppeal: (id) => req('POST', `/appeals/${id}/send`, {}),
   radar: (officeId) => req('GET', `/radar${officeId ? `?officeId=${officeId}` : ''}`),
   commission: () => req('GET', '/commission/offices'),
+  commissionOffice: (officeId) => req('GET', `/commission/offices/${encodeURIComponent(officeId)}`),
   audit: (id) => req('GET', `/audit/${id}`),
 };

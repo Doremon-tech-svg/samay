@@ -12,13 +12,11 @@ import {
   IconLock
 } from '../Icons.jsx';
 
-const SAMPLE = 'Aaple Sarkar Seva Kendra\nService: Income Certificate\nApplication No: MH20261234567\nDate: 05/10/2026';
-
 const DEMO_SLIP_LIBRARY = [
-  { key: 'mh-income-true', label: 'MH Income Certificate (genuine)', valid: true },
-  { key: 'tn-community-true', label: 'TN Community Certificate (genuine)', valid: true },
-  { key: 'gj-income-true', label: 'GJ Income Certificate (genuine)', valid: true },
-  { key: 'fake-mismatch', label: 'Fake slip (should fail verification)', valid: false }
+  { key: 'gj-income-true', label: 'Gujarat · Income Certificate', short: 'Gujarat', valid: true },
+  { key: 'tn-community-true', label: 'Tamil Nadu · Community Certificate', short: 'Tamil Nadu · start here', valid: true },
+  { key: 'mh-caste-true', label: 'Maharashtra · Caste Certificate', short: 'Maharashtra', valid: true },
+  { key: 'up-income-false', label: 'UP · invalid specimen', short: 'Invalid example', valid: false }
 ];
 
 export default function Citizen({ today, lang, online }) {
@@ -44,6 +42,7 @@ export default function Citizen({ today, lang, online }) {
   const [photoReader, setPhotoReader] = useState('');
   const [readingStage, setReadingStage] = useState('');
   const [detailsConfirmed, setDetailsConfirmed] = useState(false);
+  const [activeDemoKey, setActiveDemoKey] = useState('tn-community-true');
 
   const L = (k) => t(lang, k);
   const citizenIdentity = (() => {
@@ -76,7 +75,7 @@ export default function Citizen({ today, lang, online }) {
       setServices(svcs);
       const o = await api.offices();
       setOffices(o);
-      setForm((f) => ({ ...f, officeId: o[0]?.id ?? '' }));
+      setForm((f) => ({ ...f, officeId: citizenIdentity?.officeId || o[0]?.id || '' }));
       await refresh();
       await sync();
     })().catch((e) => setErr(e.message));
@@ -92,6 +91,12 @@ export default function Citizen({ today, lang, online }) {
   const svc = services.find((x) => x.id === form.serviceId);
   const officeChoices = offices.filter((o) => !svc || o.state_code === svc.state_code);
   const clock = detail?.clock;
+  const officeForService = (serviceId) => {
+    const service = services.find((item) => item.id === serviceId);
+    return citizenIdentity?.officeId && offices.some((office) => office.id === citizenIdentity.officeId && (!service || office.state_code === service.state_code))
+      ? citizenIdentity.officeId
+      : offices.find((office) => !service || office.state_code === service.state_code)?.id || '';
+  };
 
   const readSlip = run(async (text) => {
     const r = await api.parseSlip(text);
@@ -103,7 +108,18 @@ export default function Citizen({ today, lang, online }) {
   const loadDemoSlip = run(async (key) => {
     const slip = DEMO_SLIP_LIBRARY.find((item) => item.key === key);
     if (!slip) return;
+    setActiveDemoKey(key);
+    setErr('');
+    setReadingStage('Checking the demo specimen…');
     const ai = await api.verifySlipPhoto({ demoSlipKey: key, fileName: `${key}.jpg`, mimeType: 'image/jpeg' });
+    if (String(ai.verificationStatus || '').startsWith('REJECTED_DEMO') || ai.valid === false) {
+      setParsed({ fields: ai.fields ?? {}, missing: ['verification'] });
+      setPhotoReader(ai.provider || 'demo-proxy');
+      setReadingStage('Rejected by mock verification proxy');
+      setErr('Demo proxy rejected this specimen. The acknowledgement number is intentionally not accepted for the SAMAY walkthrough.');
+      setDetailsConfirmed(false);
+      return;
+    }
     if (ai.documentType === 'ACKNOWLEDGEMENT_SLIP') {
       const fields = ai.fields ?? {};
       setParsed({ fields, missing: [] });
@@ -111,7 +127,8 @@ export default function Citizen({ today, lang, online }) {
         ...current,
         ackNo: fields.ackNo ?? '',
         receivedOn: fields.receivedOn ?? today,
-        serviceId: fields.serviceId ?? ''
+        serviceId: fields.serviceId ?? '',
+        officeId: officeForService(fields.serviceId)
       }));
       setSlipText([
         `Application No: ${fields.ackNo ?? '[not read]'}`,
@@ -134,12 +151,6 @@ export default function Citizen({ today, lang, online }) {
   const onPhoto = run(async (e) => {
     const f = e.target.files?.[0];
     if (!f) return;
-    const demoKey = (f.name || '').toLowerCase().includes('fake') ? 'fake-mismatch' : null;
-    if (demoKey) {
-      await loadDemoSlip(demoKey);
-      e.target.value = '';
-      return;
-    }
     setOcrProgress(0);
     setOcrConfidence(null);
     setPhotoReader('');
@@ -155,6 +166,13 @@ export default function Citizen({ today, lang, online }) {
         const image = await prepareVisionImage(f);
         setReadingStage('Extracting slip fields…');
         const ai = await api.verifySlipPhoto(image);
+        if (String(ai.verificationStatus || '').startsWith('REJECTED_DEMO') || ai.valid === false) {
+          setParsed({ fields: ai.fields ?? {}, missing: ['verification'] });
+          setPhotoReader(ai.provider || 'demo-proxy');
+          setReadingStage('Rejected by mock verification proxy');
+          setErr('This uploaded specimen was rejected by the demo verification proxy. No deadline clock was started.');
+          return;
+        }
         if (ai.documentType === 'ACKNOWLEDGEMENT_SLIP') {
           const fields = ai.fields ?? {};
           const missing = [...(ai.missingFields ?? [])];
@@ -164,7 +182,8 @@ export default function Citizen({ today, lang, online }) {
             ...current,
             ackNo: fields.ackNo ?? '',
             receivedOn: fields.receivedOn ?? today,
-            serviceId: fields.serviceId ?? ''
+            serviceId: fields.serviceId ?? '',
+            officeId: officeForService(fields.serviceId)
           }));
           setSlipText([
             `Application No: ${fields.ackNo ?? '[not read]'}`,
@@ -263,6 +282,11 @@ export default function Citizen({ today, lang, online }) {
   };
 
   const getSvcDisplayName = (s) => localizedServiceName(s.name, lang);
+  const citizenStats = {
+    tracked: list.length + queued.length,
+    atRisk: list.filter((item) => item.clock?.state === 'AT_RISK').length,
+    breached: list.filter((item) => item.clock?.state === 'BREACHED').length
+  };
 
   const printAppeal = () => {
     if (!appeal) return;
@@ -273,9 +297,70 @@ export default function Citizen({ today, lang, online }) {
     win.document.close();
     win.onload = () => { win.focus(); win.print(); };
   };
+  const copyAppeal = async () => {
+    if (!appeal) return;
+    try {
+      await navigator.clipboard.writeText(appeal.body);
+      setNote('Appeal draft copied to clipboard.');
+    } catch {
+      setErr('Clipboard access is unavailable. Use Print to save the appeal as PDF.');
+    }
+  };
 
   return (
-    <div className="grid2">
+    <div className="citizen-workspace">
+      <section className="citizen-hero" aria-labelledby="citizen-workspace-title">
+        <div className="citizen-hero-copy">
+          <div className="citizen-eyebrow"><IconShield size={14} /> SAMAY CITIZEN DEMO · MOCK VERIFICATION</div>
+          <h2 id="citizen-workspace-title">A paper receipt becomes an enforceable service clock.</h2>
+          <p>Show how a citizen moves from an acknowledgement slip to a verified deadline, then to a clear next step if the service is late. The verification response is a deterministic demo proxy—not a live government or DigiLocker check.</p>
+          <div className="citizen-stat-row" aria-label="Application summary">
+            <span><strong>{citizenStats.tracked}</strong> tracked</span>
+            <span className={citizenStats.atRisk ? 'warn' : ''}><strong>{citizenStats.atRisk}</strong> at risk</span>
+            <span className={citizenStats.breached ? 'danger' : ''}><strong>{citizenStats.breached}</strong> breached</span>
+          </div>
+        </div>
+        <div className="citizen-hero-guide">
+          <div className="citizen-guide-title">Your 90-second judge walkthrough</div>
+          <div className="citizen-guide-step"><span>01</span><div><strong>Read the receipt</strong><small>Choose a demo slip or upload one</small></div></div>
+          <div className="citizen-guide-step"><span>02</span><div><strong>Check the facts</strong><small>Review the extracted fields yourself</small></div></div>
+          <div className="citizen-guide-step"><span>03</span><div><strong>Start the legal clock</strong><small>Use the service rule and due date</small></div></div>
+          <div className="citizen-guide-step"><span>04</span><div><strong>See the remedy</strong><small>Simulate a delay and draft an appeal</small></div></div>
+          <div className="citizen-demo-controls" aria-label="Choose a demo acknowledgement slip">
+            <div className="citizen-demo-controls-title">Start with a verified demo specimen</div>
+            <div className="citizen-demo-buttons">
+              {DEMO_SLIP_LIBRARY.map((slip) => (
+                <button
+                  key={slip.key}
+                  type="button"
+                  className={`${slip.valid ? 'valid' : 'invalid'} ${activeDemoKey === slip.key ? 'chosen' : ''}`}
+                  onClick={() => loadDemoSlip(slip.key)}
+                  aria-pressed={activeDemoKey === slip.key}
+                >
+                  <span aria-hidden="true">{slip.valid ? '✓' : '!'}</span>{slip.short}
+                </button>
+              ))}
+            </div>
+            <small>One negative example shows how an unverified slip is stopped before a clock begins.</small>
+          </div>
+        </div>
+      </section>
+
+      <section className="citizen-demo-story" aria-label="What the demo demonstrates">
+        <div className="citizen-demo-story-head">
+          <span className="citizen-demo-live-dot" />
+          <div><strong>The story to tell</strong><small>Every step is visible and citizen-controlled</small></div>
+        </div>
+        <div className="citizen-demo-story-track">
+          <span><b>1</b> Slip submitted</span><i aria-hidden="true" />
+          <span><b>2</b> Fields extracted</span><i aria-hidden="true" />
+          <span><b>3</b> Deadline explained</span><i aria-hidden="true" />
+          <span><b>4</b> Appeal prepared</span>
+        </div>
+        <div className="citizen-demo-explain"><strong>Explain it this way:</strong> “SAMAY does not replace the application portal. It makes the service promise legible, keeps the clock visible, and helps a citizen prepare the next lawful step.”</div>
+      </section>
+
+      <div className="grid2">
       {/* ── Left Column: Slip Ingestion & Applications ── */}
       <section className="card" aria-labelledby="submit-heading">
         <div className="step-header">
@@ -321,33 +406,16 @@ export default function Citizen({ today, lang, online }) {
             onChange={(e) => { setSlipText(e.target.value); setOcrConfidence(null); setPhotoReader(''); setDetailsConfirmed(false); }}
           />
 
-          <div className="row" style={{ marginTop: -6, marginBottom: 14, flexWrap: 'wrap', gap: 8 }}>
-            <button
-              type="button"
-              style={{ fontSize: 12, padding: '5px 11px' }}
-              onClick={() => { setDetailsConfirmed(false); setSlipText(SAMPLE); readSlip(SAMPLE); }}
-            >
-              <IconFileText size={14} /> {L('sample')}
-            </button>
-            {DEMO_SLIP_LIBRARY.map((slip) => (
-              <button
-                key={slip.key}
-                type="button"
-                style={{ fontSize: 11, padding: '5px 9px', background: slip.valid ? '#ecfdf5' : '#fff7ed', borderColor: slip.valid ? '#86efac' : '#fdba74', color: slip.valid ? '#166534' : '#9a5b00' }}
-                onClick={() => loadDemoSlip(slip.key)}
-                title={slip.label}
-              >
-                {slip.valid ? '✔' : '✖'} {slip.label}
-              </button>
-            ))}
+          <div className="citizen-manual-actions">
+            <p>Prefer your own receipt? Upload a photo above or paste its printed text here. You’ll review every value before starting the clock.</p>
             <button
               type="button"
               className="secondary-teal"
-              style={{ fontSize: 12, padding: '5px 13px', marginLeft: 'auto' }}
+              style={{ fontSize: 12, padding: '7px 13px' }}
               onClick={() => readSlip(slipText)}
               disabled={!slipText}
             >
-              {L('readSlip')}
+              <IconFileText size={14} /> {L('readSlip')}
             </button>
           </div>
 
@@ -733,19 +801,31 @@ export default function Citizen({ today, lang, online }) {
             {/* Generated Appeal Letter */}
             {appeal && (
               <div className="appeal-preview" role="region" aria-label={`${L('appealLetter')} ${L('level')} ${appeal.level}`}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12, marginBottom: 14 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <span style={{ background: 'var(--navy)', color: '#fff', fontSize: 11, fontWeight: 700, padding: '3px 8px', borderRadius: 4 }}>
                       {L('level')} {appeal.level} {L('appealLetter')}
                     </span>
-                    <strong style={{ fontSize: 14 }}>To: {appeal.addressedTo}</strong>
+                    <div>
+                      <strong style={{ display: 'block', fontSize: 14 }}>To: {appeal.addressedTo}</strong>
+                      <span style={{ display: 'block', marginTop: 3, fontSize: 11.5, color: '#64748b' }}>Generated from the approved rule record and deterministic clock</span>
+                    </div>
                   </div>
                   <span style={{ fontSize: 11, color: '#64748b' }}>{L('statutoryFormat')}</span>
+                </div>
+
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
+                  {['Application number locked', 'Due date included', 'Addressee checked', 'Human review required'].map((item) => (
+                    <span key={item} style={{ background: '#ecfdf5', color: '#166534', border: '1px solid #bbf7d0', borderRadius: 999, padding: '4px 8px', fontSize: 10.5, fontWeight: 700 }}>✓ {item}</span>
+                  ))}
                 </div>
 
                 <pre>{appeal.body}</pre>
 
                 <div className="row" style={{ marginTop: 14 }}>
+                  <button onClick={copyAppeal} style={{ flex: 1 }}>
+                    <IconFileText size={15} /> Copy draft
+                  </button>
                   <button onClick={printAppeal} style={{ flex: 1 }}>
                     <IconPrinter size={15} /> {L('print')}
                   </button>
@@ -839,6 +919,7 @@ export default function Citizen({ today, lang, online }) {
           </>
         )}
       </section>
+      </div>
     </div>
   );
 }
