@@ -14,6 +14,7 @@ const app = createApp({ pool, demoMode: process.env.DEMO_MODE === '1' });
 // Auto-initialize schema & seed data if database is fresh / deployed to empty PostgreSQL
 async function ensureDatabaseReady(p) {
   try {
+    await loadSchema(p); // additive/idempotent upgrades also run for existing demo databases
     const { rows } = await p.query(`
       SELECT EXISTS (
         SELECT FROM information_schema.tables 
@@ -29,6 +30,8 @@ async function ensureDatabaseReady(p) {
       await seedDemoApplications(p);
       console.log('Database successfully initialized with schema, registry, and synthetic data!');
     } else {
+      // Additive registry upgrade: keep judge-demo services and offices available after the original scaffold was seeded.
+      await seedRegistry(p);
       const { rows: countRows } = await p.query('SELECT COUNT(*) AS c FROM services');
       if (Number(countRows[0]?.c) === 0) {
         console.log('Services table empty. Seeding registry and synthetic data...');

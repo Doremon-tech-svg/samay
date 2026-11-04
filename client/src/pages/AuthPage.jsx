@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useEffect } from 'react';
+import { api } from '../api.js';
 import { IconUser, IconRadar, IconMap } from '../Icons.jsx';
 import { Ui, IndiaFlag } from '../UiIcons.jsx';
 
@@ -37,6 +39,14 @@ export default function AuthPage({ initialMode = 'login', onAuthSuccess, onBackT
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [availableDemoUsers, setAvailableDemoUsers] = useState({
+    citizens: DEMO_USERS.citizen,
+    officers: DEMO_USERS.officer,
+    commission: DEMO_USERS.commission
+  });
+  useEffect(() => {
+    api.demoUsers().then(setAvailableDemoUsers).catch(() => { /* static fallback keeps demo usable offline */ });
+  }, []);
 
   const handleSendOtp = (e) => {
     e.preventDefault();
@@ -373,7 +383,7 @@ export default function AuthPage({ initialMode = 'login', onAuthSuccess, onBackT
             </div>
 
             <div className="auth-quick-demo-buttons">
-              {DEMO_USERS.citizen.map((user) => (
+              {availableDemoUsers.citizens.map((user) => (
                 <button
                   key={user.phone}
                   type="button"
@@ -383,13 +393,13 @@ export default function AuthPage({ initialMode = 'login', onAuthSuccess, onBackT
                   <div className="auth-quick-icon"><Ui name="user" size={18} /></div>
                   <div className="auth-quick-info">
                     <strong>Citizen Demo</strong>
-                    <span>{user.name} · {user.phone}</span>
+                    <span>{user.name} · {user.state || 'Citizen'} · {user.district || user.phone}</span>
                   </div>
                   <span className="auth-quick-arrow">→</span>
                 </button>
               ))}
 
-              {DEMO_USERS.officer.map((user) => (
+              {availableDemoUsers.officers.map((user) => (
                 <button
                   key={user.phone}
                   type="button"
@@ -399,13 +409,13 @@ export default function AuthPage({ initialMode = 'login', onAuthSuccess, onBackT
                   <div className="auth-quick-icon"><Ui name="shield" size={18} /></div>
                   <div className="auth-quick-info">
                     <strong>Officer Radar Demo</strong>
-                    <span>{user.name} · {user.department}</span>
+                    <span>{user.name} · {user.district || user.department} · {user.officerId}</span>
                   </div>
                   <span className="auth-quick-arrow">→</span>
                 </button>
               ))}
 
-              {DEMO_USERS.commission.map((user) => (
+              {availableDemoUsers.commission.map((user) => (
                 <button
                   key={user.phone}
                   type="button"

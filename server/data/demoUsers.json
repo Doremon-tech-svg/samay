@@ -1,0 +1,30 @@
+{
+  "citizens": [
+    { "name": "Patel Rajeshbhai", "phone": "9876500001", "role": "citizen", "tab": "citizen", "state": "Gujarat", "district": "Ahmedabad", "officeId": "GJ-ahmedabad-jsk-main", "slipKey": "gj-income-true" },
+    { "name": "Arun Prakash", "phone": "9876500002", "role": "citizen", "tab": "citizen", "state": "Tamil Nadu", "district": "Chennai", "officeId": "TN-chennai-eservice-main", "slipKey": "tn-community-true" },
+    { "name": "Chaudhari Amit Manoj", "phone": "9876500003", "role": "citizen", "tab": "citizen", "state": "Maharashtra", "district": "Pune", "officeId": "MH-pune-aaple-main", "slipKey": "mh-caste-true" },
+    { "name": "Rahul Kumar", "phone": "9876500004", "role": "citizen", "tab": "citizen", "state": "Uttar Pradesh", "district": "Lucknow", "officeId": "UP-lucknow-esathi-main", "slipKey": "up-income-false" }
+  ],
+  "officers": [
+    { "name": "Officer Kavita Shah", "phone": "9876510001", "role": "officer", "tab": "officer", "officerId": "GJ-AHM-REV-01", "department": "Revenue Department", "state": "Gujarat", "district": "Ahmedabad", "officeId": "GJ-ahmedabad-jsk-main" },
+    { "name": "Officer Harsh Mehta", "phone": "9876510002", "role": "officer", "tab": "officer", "officerId": "GJ-AHM-REV-02", "department": "Revenue Department", "state": "Gujarat", "district": "Ahmedabad", "officeId": "GJ-ahmedabad-jsk-main" },
+    { "name": "Officer Nisha Patel", "phone": "9876510003", "role": "officer", "tab": "officer", "officerId": "GJ-AHM-REV-03", "department": "Revenue Department", "state": "Gujarat", "district": "Ahmedabad", "officeId": "GJ-ahmedabad-jsk-main" },
+    { "name": "Officer Ramesh Iyer", "phone": "9876510004", "role": "officer", "tab": "officer", "officerId": "TN-CHE-REV-01", "department": "Revenue Department", "state": "Tamil Nadu", "district": "Chennai", "officeId": "TN-chennai-eservice-main" },
+    { "name": "Officer Meena Krishnan", "phone": "9876510005", "role": "officer", "tab": "officer", "officerId": "TN-CHE-REV-02", "department": "Revenue Department", "state": "Tamil Nadu", "district": "Chennai", "officeId": "TN-chennai-eservice-main" },
+    { "name": "Officer Suresh Babu", "phone": "9876510006", "role": "officer", "tab": "officer", "officerId": "TN-CHE-REV-03", "department": "Revenue Department", "state": "Tamil Nadu", "district": "Chennai", "officeId": "TN-chennai-eservice-main" },
+    { "name": "Officer Priya Deshmukh", "phone": "9876510007", "role": "officer", "tab": "officer", "officerId": "MH-PUN-REV-01", "department": "Revenue Department", "state": "Maharashtra", "district": "Pune", "officeId": "MH-pune-aaple-main" },
+    { "name": "Officer Nitin Jadhav", "phone": "9876510008", "role": "officer", "tab": "officer", "officerId": "MH-PUN-REV-02", "department": "Revenue Department", "state": "Maharashtra", "district": "Pune", "officeId": "MH-pune-aaple-main" },
+    { "name": "Officer Swati More", "phone": "9876510009", "role": "officer", "tab": "officer", "officerId": "MH-PUN-REV-03", "department": "Revenue Department", "state": "Maharashtra", "district": "Pune", "officeId": "MH-pune-aaple-main" },
+    { "name": "Officer Anil Verma", "phone": "9876510010", "role": "officer", "tab": "officer", "officerId": "UP-LKO-REV-01", "department": "Revenue Department", "state": "Uttar Pradesh", "district": "Lucknow", "officeId": "UP-lucknow-esathi-main" },
+    { "name": "Officer Sunita Yadav", "phone": "9876510011", "role": "officer", "tab": "officer", "officerId": "UP-LKO-REV-02", "department": "Revenue Department", "state": "Uttar Pradesh", "district": "Lucknow", "officeId": "UP-lucknow-esathi-main" },
+    { "name": "Officer Deepak Singh", "phone": "9876510012", "role": "officer", "tab": "officer", "officerId": "UP-LKO-REV-03", "department": "Revenue Department", "state": "Uttar Pradesh", "district": "Lucknow", "officeId": "UP-lucknow-esathi-main" },
+    { "name": "Officer Farida Khan", "phone": "9876510013", "role": "officer", "tab": "officer", "officerId": "GJ-SUR-REV-01", "department": "Revenue Department", "state": "Gujarat", "district": "Surat", "officeId": "GJ-surat-jsk" },
+    { "name": "Officer Vijay Rao", "phone": "9876510014", "role": "officer", "tab": "officer", "officerId": "TN-CBE-REV-01", "department": "Revenue Department", "state": "Tamil Nadu", "district": "Coimbatore", "officeId": "TN-coimbatore-eservice" },
+    { "name": "Officer Asha Kulkarni", "phone": "9876510015", "role": "officer", "tab": "officer", "officerId": "MH-NAG-REV-01", "department": "Revenue Department", "state": "Maharashtra", "district": "Nagpur", "officeId": "MH-nagpur-aaple" }
+  ],
+  "commission": [
+    { "name": "Chief Commissioner Anita Varma", "phone": "9876520001", "role": "commission", "tab": "commission", "officerId": "RTS-COMM-01", "department": "State Right to Public Services Commission" },
+    { "name": "Commissioner Neha Pandey", "phone": "9876520002", "role": "commission", "tab": "commission", "officerId": "RTS-COMM-02", "department": "State Right to Public Services Commission" },
+    { "name": "Commissioner S. Krishnan", "phone": "9876520003", "role": "commission", "tab": "commission", "officerId": "RTS-COMM-03", "department": "State Right to Public Services Commission" }
+  ]
+}

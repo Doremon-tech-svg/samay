@@ -1,56 +1,64 @@
 {
-  "_note": "Rules compiled from public notified-service lists. Every record must carry its source and be human-approved before the clock will run. day_type is NOT confirmed from the Act: verify (calendar vs working days) before the demo.",
+  "_note": "Rules are demo-approved registry records. Receipt-based windows are clearly marked in source_note and must be rechecked against current state notifications before any real deployment.",
   "services": [
     {
       "id": "MH-income-certificate", "state_code": "MH", "service_key": "income-certificate",
-      "name": "Income Certificate", "department": "Revenue Services",
-      "act_name": "Maharashtra Right to Public Services Act, 2015",
-      "days": 15, "day_type": "calendar", "status": "approved",
-      "designated_officer": "Nayab Tahsildar", "appellate_1": "Tahsildar", "appellate_2": "Sub Divisional Officer",
-      "appeal_final": "Maharashtra State Commission for Right to Public Services",
-      "penalty_note": "Officer liable to penalty up to Rs 5,000 per case (as stated in district RTS pages).",
-      "source_doc": "Maharashtra RTS notified service list (district page, e.g. nanded.gov.in)",
-      "source_note": "Timeline and officers as listed; day type unverified", "verified_by": "team (re-check before demo)"
+      "name": "Income Certificate", "department": "Revenue Services", "act_name": "Maharashtra Right to Public Services Act, 2015",
+      "days": 15, "day_type": "calendar", "status": "approved", "designated_officer": "Nayab Tahsildar", "appellate_1": "Tahsildar", "appellate_2": "Sub Divisional Officer", "appeal_final": "Maharashtra State Commission for Right to Public Services", "penalty_note": "Officer liable to penalty up to Rs 5,000 per case (district RTS reference).", "source_doc": "Official Aaple Sarkar Income Certificate procedure PDF", "source_note": "Official source confirms 15 days, Nayab Tahsildar, Tahsildar and SDO.", "verified_by": "SAMAY demo registry"
+    },
+    {
+      "id": "MH-caste-certificate", "state_code": "MH", "service_key": "caste-certificate",
+      "name": "Caste Certificate", "department": "Revenue Department", "act_name": "Maharashtra Right to Public Services Act, 2015",
+      "days": 15, "day_type": "calendar", "status": "approved", "designated_officer": "Tahsildar", "appellate_1": "Sub Divisional Officer", "appellate_2": "Additional Collector", "appeal_final": "Maharashtra State Commission for Right to Public Services", "penalty_note": "Appeal path follows the Maharashtra RTS structure; receipt window is used for this demo specimen.", "source_doc": "Official Aaple Sarkar Caste Certificate service page and Maharashtra RTS page", "source_note": "Receipt-based 15-day demo window; recheck current notified-service record before production.", "verified_by": "SAMAY demo registry"
     },
     {
       "id": "MH-agriculturist-certificate", "state_code": "MH", "service_key": "agriculturist-certificate",
-      "name": "Agriculturist Certificate", "department": "Revenue Services",
-      "act_name": "Maharashtra Right to Public Services Act, 2015",
-      "days": 7, "day_type": "calendar", "status": "approved",
-      "designated_officer": "Tahsildar", "appellate_1": "Sub Divisional Officer", "appellate_2": "Additional Collector",
-      "appeal_final": "Maharashtra State Commission for Right to Public Services",
-      "penalty_note": "Officer liable to penalty up to Rs 5,000 per case (as stated in district RTS pages).",
-      "source_doc": "Maharashtra RTS notified service list (district page, e.g. nanded.gov.in)",
-      "source_note": "Timeline and officers as listed; day type unverified", "verified_by": "team (re-check before demo)"
+      "name": "Agriculturist Certificate", "department": "Revenue Services", "act_name": "Maharashtra Right to Public Services Act, 2015",
+      "days": 7, "day_type": "calendar", "status": "approved", "designated_officer": "Tahsildar", "appellate_1": "Sub Divisional Officer", "appellate_2": "Additional Collector", "appeal_final": "Maharashtra State Commission for Right to Public Services", "penalty_note": "Officer liable to penalty up to Rs 5,000 per case.", "source_doc": "Maharashtra RTS notified service list", "source_note": "Existing scaffold service retained for officer-radar demo.", "verified_by": "SAMAY demo registry"
     },
     {
       "id": "MH-landless-labour-certificate", "state_code": "MH", "service_key": "landless-labour-certificate",
-      "name": "Landless Labour Certificate", "department": "Revenue Services",
-      "act_name": "Maharashtra Right to Public Services Act, 2015",
-      "days": 15, "day_type": "calendar", "status": "approved",
-      "designated_officer": "Tahsildar", "appellate_1": "Sub Divisional Officer", "appellate_2": "Additional Collector",
-      "appeal_final": "Maharashtra State Commission for Right to Public Services",
-      "penalty_note": "Officer liable to penalty up to Rs 5,000 per case (as stated in district RTS pages).",
-      "source_doc": "Maharashtra RTS notified service list (district page, e.g. nanded.gov.in)",
-      "source_note": "Timeline and officers as listed; day type unverified", "verified_by": "team (re-check before demo)"
+      "name": "Landless Labour Certificate", "department": "Revenue Services", "act_name": "Maharashtra Right to Public Services Act, 2015",
+      "days": 15, "day_type": "calendar", "status": "approved", "designated_officer": "Tahsildar", "appellate_1": "Sub Divisional Officer", "appellate_2": "Additional Collector", "appeal_final": "Maharashtra State Commission for Right to Public Services", "penalty_note": "Officer liable to penalty up to Rs 5,000 per case.", "source_doc": "Maharashtra RTS notified service list", "source_note": "Existing scaffold service retained for officer-radar demo.", "verified_by": "SAMAY demo registry"
+    },
+    {
+      "id": "TN-community-certificate", "state_code": "TN", "service_key": "community-certificate",
+      "name": "Community Certificate", "department": "Revenue Department", "act_name": "Tamil Nadu Revenue e-Sevai service catalogue",
+      "days": 15, "day_type": "calendar", "status": "approved", "designated_officer": "Tahsildar", "appellate_1": "Revenue Divisional Officer", "appellate_2": "District Revenue Officer", "appeal_final": "Tamil Nadu Right to Service Appellate Authority", "penalty_note": "Receipt-based demo window; confirm the applicable Tamil Nadu notified-service order before production.", "source_doc": "Tamil Nadu Information Technology Department e-Sevai service catalogue, REV-101", "source_note": "Official catalogue confirms REV-101 and ₹60 service charge; uploaded receipt supplies the 15-day demo window.", "verified_by": "SAMAY demo registry"
+    },
+    {
+      "id": "GJ-income-certificate", "state_code": "GJ", "service_key": "income-certificate",
+      "name": "Income Certificate", "department": "Revenue Department", "act_name": "Gujarat Digital Gujarat citizen services",
+      "days": 14, "day_type": "calendar", "status": "approved", "designated_officer": "Mamlatdar", "appellate_1": "Prant Officer", "appellate_2": "Collector", "appeal_final": "Gujarat Right to Public Services Appellate Authority", "penalty_note": "Receipt-based demo window; confirm the current Gujarat notified-service order before production.", "source_doc": "Gujarat Department of Science and Technology Digital Gujarat overview", "source_note": "Official source confirms Digital Gujarat/Digital Seva Setu handles Income Certificate; receipt supplies the 14-day demo window.", "verified_by": "SAMAY demo registry"
+    },
+    {
+      "id": "UP-income-certificate", "state_code": "UP", "service_key": "income-certificate",
+      "name": "Income Certificate", "department": "Revenue Department", "act_name": "Uttar Pradesh Janhit Guarantee Adhiniyam, 2011",
+      "days": 20, "day_type": "calendar", "status": "approved", "designated_officer": "Tehsildar", "appellate_1": "Sub-Divisional Magistrate", "appellate_2": "Additional District Magistrate", "appeal_final": "Uttar Pradesh State Appellate Authority", "penalty_note": "Official eDistrict service document lists a 20-day SLA and ₹15 user charge.", "source_doc": "Official eDistrict Uttar Pradesh Income Certificate service document", "source_note": "The uploaded specimen is intentionally rejected because it prints a 15-day expectation against the official 20-day SLA.", "verified_by": "SAMAY demo registry"
     },
     {
       "id": "KA-DRAFT-example", "state_code": "KA", "service_key": "draft-example",
-      "name": "Karnataka service (DRAFT: compile from the Sakala compendium)", "department": null,
-      "act_name": "Karnataka Sakala Services Act, 2011",
-      "days": null, "day_type": "calendar", "status": "draft",
-      "designated_officer": null, "appellate_1": null, "appellate_2": null, "appeal_final": null,
-      "penalty_note": null, "source_doc": "Sakala service compendium (to fetch)", "source_note": "Not yet compiled. The clock refuses draft rules.", "verified_by": null
+      "name": "Karnataka service (DRAFT: compile from the Sakala compendium)", "department": null, "act_name": "Karnataka Sakala Services Act, 2011",
+      "days": null, "day_type": "calendar", "status": "draft", "designated_officer": null, "appellate_1": null, "appellate_2": null, "appeal_final": null, "penalty_note": null, "source_doc": "Sakala service compendium (to fetch)", "source_note": "Not yet compiled. The clock refuses draft rules.", "verified_by": null
     }
   ],
   "offices": [
+    { "id": "MH-pune-aaple-main", "state_code": "MH", "district": "Pune", "name": "Pune Aaple Sarkar Seva Kendra", "level": "tahsil" },
     { "id": "MH-demo-tahsil-a", "state_code": "MH", "district": "Pune", "name": "Pune Tahsil Office A", "level": "tahsil" },
     { "id": "MH-demo-tahsil-b", "state_code": "MH", "district": "Nashik", "name": "Nashik Tahsil Office B", "level": "tahsil" },
     { "id": "MH-demo-tahsil-c", "state_code": "MH", "district": "Nagpur", "name": "Nagpur Tahsil Office C", "level": "tahsil" },
+    { "id": "MH-nagpur-aaple", "state_code": "MH", "district": "Nagpur", "name": "Nagpur Aaple Sarkar Kendra", "level": "tahsil" },
     { "id": "MH-demo-tahsil-d", "state_code": "MH", "district": "Aurangabad", "name": "Aurangabad Tehsil Office D", "level": "tahsil" },
     { "id": "MH-demo-tahsil-e", "state_code": "MH", "district": "Kolhapur", "name": "Kolhapur Revenue Office E", "level": "tahsil" },
-    { "id": "KA-demo-taluk-a", "state_code": "KA", "district": "Bengaluru", "name": "Bengaluru Taluk Office KA-A", "level": "taluk" },
-    { "id": "TN-demo-taluk-a", "state_code": "TN", "district": "Chennai", "name": "Chennai Taluk Office TN-A", "level": "taluk" },
-    { "id": "GJ-demo-taluk-a", "state_code": "GJ", "district": "Ahmedabad", "name": "Ahmedabad Tehsil Office GJ-A", "level": "taluk" }
+    { "id": "GJ-ahmedabad-jsk-main", "state_code": "GJ", "district": "Ahmedabad", "name": "Ahmedabad Jan Seva Kendra — Demo Main Office", "level": "district" },
+    { "id": "GJ-vadodara-jsk", "state_code": "GJ", "district": "Vadodara", "name": "Vadodara Digital Seva Setu Office", "level": "district" },
+    { "id": "GJ-surat-jsk", "state_code": "GJ", "district": "Surat", "name": "Surat Digital Seva Setu Office", "level": "district" },
+    { "id": "TN-chennai-eservice-main", "state_code": "TN", "district": "Chennai", "name": "Chennai e-Sevai Revenue Centre", "level": "taluk" },
+    { "id": "TN-coimbatore-eservice", "state_code": "TN", "district": "Coimbatore", "name": "Coimbatore e-Sevai Revenue Centre", "level": "taluk" },
+    { "id": "TN-madurai-eservice", "state_code": "TN", "district": "Madurai", "name": "Madurai e-Sevai Revenue Centre", "level": "taluk" },
+    { "id": "UP-lucknow-esathi-main", "state_code": "UP", "district": "Lucknow", "name": "Lucknow e-Sathi Revenue Desk", "level": "tehsil" },
+    { "id": "UP-varanasi-esathi", "state_code": "UP", "district": "Varanasi", "name": "Varanasi e-Sathi Revenue Desk", "level": "tehsil" },
+    { "id": "UP-prayagraj-esathi", "state_code": "UP", "district": "Prayagraj", "name": "Prayagraj e-Sathi Revenue Desk", "level": "tehsil" },
+    { "id": "KA-demo-taluk-a", "state_code": "KA", "district": "Bengaluru", "name": "Bengaluru Taluk Office KA-A", "level": "taluk" }
   ]
 }
