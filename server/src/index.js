@@ -14,6 +14,7 @@ const app = createApp({ pool, demoMode: process.env.DEMO_MODE === '1' });
 // Auto-initialize schema & seed data if database is fresh / deployed to empty PostgreSQL
 async function ensureDatabaseReady(p) {
   try {
+    await loadSchema(p); // additive/idempotent upgrades also run for existing demo databases
     const { rows } = await p.query(`
       SELECT EXISTS (
         SELECT FROM information_schema.tables 

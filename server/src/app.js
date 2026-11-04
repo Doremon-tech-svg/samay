@@ -11,6 +11,7 @@ import { detectDemoSlipKey, getDemoSlipResult } from './services/demoSlipBank.js
 import { mountCompiler } from './routes/compilerRoutes.js';
 import { translateWithBhashini } from './services/bhashini.js';
 import { askCopilot, normalizeRole } from './services/copilot.js';
+import { departments as SYN_DEPARTMENTS, officers as SYN_OFFICERS, citizens as SYN_CITIZENS, services as SYN_SERVICES, applications as SYN_APPS, getClock as syntheticClock } from './services/commissionFixture.js';
 
 const HOLIDAYS = JSON.parse(readFileSync(new URL('../data/holidays.json', import.meta.url)));
 const RTS_SOURCES = JSON.parse(readFileSync(new URL('../data/rtsSources.json', import.meta.url)));
@@ -97,7 +98,11 @@ export function createApp({ pool, demoMode = false, now = () => new Date().toISO
   }
 
   app.get('/api/health', (_req, res) => res.json({ ok: true }));
-  app.get('/api/demo/users', (_req, res) => res.json(DEMO_USERS));
+  app.get('/api/demo/users', (_req, res) => res.json({ ...DEMO_USERS,
+    citizens: [...DEMO_USERS.citizens, ...SYN_CITIZENS.slice(DEMO_USERS.citizens.length).map(({id,name,state,district,role,tab,synthetic,demo})=>({id,name,state,district,role,tab,synthetic,demo}))],
+    officers: SYN_OFFICERS.map((o)=>({name:o.name,officerId:o.officerId,department:o.department,departmentId:o.departmentId,
+      officeId:o.departmentId,state:o.stateCode,district:o.district,role:'officer',tab:'officer',synthetic:true,demo:true}))
+  }));
   app.post('/api/copilot/chat', wrap(async (req, res) => {
     const body = req.body ?? {};
     const role = normalizeRole(body.role);
@@ -423,85 +428,34 @@ export function createApp({ pool, demoMode = false, now = () => new Date().toISO
     res.json(items);
   }));
 
-  // ---- Commission map: per-office aggregates with small-count suppression ----
+  // ---- Synthetic Commission catalog: never mix the legacy aggregate seed or real services/cases.
   app.get('/api/commission/offices', wrap(async (req, res) => {
-    const asOf = today(req);
-    const { rows } = await pool.query('SELECT id FROM applications');
-    const agg = new Map();
-    for (const r of rows) {
-      const c = await load(r.id); const st = statusOf(c, asOf);
-      const o = agg.get(c.a.office_id) ?? { officeId: c.a.office_id, office: c.a.officeName, district: c.a.district, total: 0, late: 0, atRisk: 0, open: 0, reasons: {}, departments: {} };
-      o.total++; if (['BREACHED', 'COMPLETED_LATE'].includes(st.state)) o.late++;
-      if (st.state === 'AT_RISK') o.atRisk++; if (!c.a.disposed_on) o.open++;
-      if (c.a.reason_code && ['BREACHED', 'AT_RISK'].includes(st.state)) o.reasons[c.a.reason_code] = (o.reasons[c.a.reason_code] ?? 0) + 1;
-      const department = c.s.department || 'Other public services';
-      const d = o.departments[department] ?? { total: 0, late: 0, atRisk: 0, open: 0, reasons: {} };
-      d.total++;
-      if (['BREACHED', 'COMPLETED_LATE'].includes(st.state)) d.late++;
-      if (st.state === 'AT_RISK') d.atRisk++;
-      if (!c.a.disposed_on) d.open++;
-      if (c.a.reason_code && ['BREACHED', 'AT_RISK'].includes(st.state)) d.reasons[c.a.reason_code] = (d.reasons[c.a.reason_code] ?? 0) + 1;
-      o.departments[department] = d;
-      agg.set(c.a.office_id, o);
-    }
-    res.json([...agg.values()].map((o) => o.total < K_ANON ? { officeId: o.officeId, office: o.office, district: o.district, suppressed: true, note: `fewer than ${K_ANON} applications` }
-      : { ...o, primaryDepartment: Object.entries(o.departments).sort((a, b) => b[1].total - a[1].total)[0]?.[0] || 'Public services', lateRate: +(o.late / o.total).toFixed(3) }).sort((a, b) => (b.lateRate ?? -1) - (a.lateRate ?? -1)));
+    const asOf=today(req); const result=SYN_DEPARTMENTS.map(d=>{const cases=SYN_APPS.filter(a=>a.departmentId===d.id); const counts={total:cases.length,late:0,atRisk:0,open:0,reasons:{}}; const groups={}; for(const a of cases){const st=syntheticClock(a,asOf); if(['BREACHED','COMPLETED_LATE'].includes(st.state))counts.late++; if(st.state==='AT_RISK')counts.atRisk++; if(!a.disposedOn)counts.open++; if(a.reasonCode)counts.reasons[a.reasonCode]=(counts.reasons[a.reasonCode]||0)+1; groups[st.state]=(groups[st.state]||0)+1;} const suppressed=cases.length<K_ANON; return {officeId:d.id,office:d.name,district:d.district,departmentId:d.id,departmentName:d.name,stateCode:d.stateCode,synthetic:true,demo:true,total:counts.total,late:counts.late,atRisk:counts.atRisk,open:counts.open,lateRate:+(counts.late/counts.total).toFixed(3),statusGroups:groups,officerCount:SYN_OFFICERS.filter(o=>o.departmentId===d.id).length,departments:{[d.name]:counts},suppressed:suppressed||undefined,note:suppressed?`fewer than ${K_ANON} applications`:undefined};});
+    res.json(result.sort((a,b)=>b.lateRate-a.lateRate));
   }));
-
-  // Commission drill-down: only offices meeting k-anonymity can expose masked case-level evidence.
-  app.get('/api/commission/offices/:officeId', wrap(async (req, res) => {
-    const officeId = String(req.params.officeId || '').slice(0, 120);
-    const office = (await pool.query('SELECT id, state_code, district, name, level FROM offices WHERE id = $1', [officeId])).rows[0];
-    if (!office) return res.status(404).json({ error: 'Office not found in the demo directory.' });
-    const ids = (await pool.query('SELECT id FROM applications WHERE office_id = $1 ORDER BY received_on DESC', [officeId])).rows;
-    if (ids.length < K_ANON) return res.status(403).json({ error: 'This office is protected by the k-anonymity privacy threshold; case-level drill-down is unavailable.' });
-
-    const roster = DEMO_USERS.officers.filter((person) => person.officeId === officeId);
-    const applications = [];
-    const reasonCounts = {};
-    const departmentCounts = {};
-    for (const row of ids) {
-      const ctx = await load(row.id);
-      if (!ctx?.s) continue;
-      const clock = statusOf(ctx, today(req));
-      const department = ctx.s.department || 'Other public services';
-      const departmentRow = departmentCounts[department] ?? { applications: 0, delayed: 0, atRisk: 0 };
-      departmentRow.applications++;
-      if (['BREACHED', 'COMPLETED_LATE'].includes(clock.state)) departmentRow.delayed++;
-      if (clock.state === 'AT_RISK') departmentRow.atRisk++;
-      departmentCounts[department] = departmentRow;
-      if (ctx.a.reason_code && ['BREACHED', 'COMPLETED_LATE', 'AT_RISK'].includes(clock.state)) {
-        reasonCounts[ctx.a.reason_code] = (reasonCounts[ctx.a.reason_code] || 0) + 1;
-      }
-      if (!['BREACHED', 'COMPLETED_LATE', 'AT_RISK'].includes(clock.state)) continue;
-      const hash = [...String(ctx.a.ack_no)].reduce((sum, char) => sum + char.charCodeAt(0), 0);
-      const demoOfficer = roster.length ? roster[hash % roster.length] : null;
-      const ack = String(ctx.a.ack_no || '');
-      applications.push({
-        id: ctx.a.id,
-        reference: ack ? `••••${ack.slice(-4)}` : 'Reference withheld',
-        service: ctx.s.name,
-        department,
-        receivedOn: ctx.a.received_on,
-        dueDate: clock.dueDate,
-        status: clock.state,
-        daysLate: clock.daysLate || 0,
-        daysLeft: clock.remaining,
-        reasonCode: ctx.a.reason_code || null,
-        officer: demoOfficer ? { name: demoOfficer.name, officerId: demoOfficer.officerId, designation: ctx.s.designated_officer || 'Designated Officer', synthetic: true } : { name: 'Designated Officer (role only)', officerId: null, designation: ctx.s.designated_officer || 'Designated Officer', synthetic: true }
-      });
-    }
-    applications.sort((a, b) => (b.daysLate || 0) - (a.daysLate || 0) || String(a.dueDate).localeCompare(String(b.dueDate)));
-    res.json({
-      office: { id: office.id, name: office.name, district: office.district, stateCode: office.state_code, level: office.level },
-      synthetic: true,
-      privacy: { k: K_ANON, cohortSize: ids.length, referencesMasked: true, citizenNamesExcluded: true },
-      departments: departmentCounts,
-      reasonCounts,
-      delayedApplications: applications,
-      contact: { mode: 'DEMO_DRAFT_ONLY', sent: false, note: 'Officer names are synthetic demo profiles. No live telephone, email, messaging directory, or delivery integration is configured.' },
-      asOf: today(req)
+  app.get('/api/commission/offices/:officeId', wrap(async(req,res)=>{
+    const d=SYN_DEPARTMENTS.find(x=>x.id===req.params.officeId); if(!d)return res.status(404).json({error:'Office not found in synthetic demo directory.'});
+    const cases=SYN_APPS.filter(a=>a.departmentId===d.id); if(cases.length<K_ANON)return res.status(403).json({error:'This office is protected by the k-anonymity privacy threshold; case-level drill-down is unavailable.'});
+    const asOf = today(req);
+    const roster = SYN_OFFICERS.filter((officer) => officer.departmentId === d.id);
+    const safeOfficers = roster.map((officer) => {
+      const assigned = cases.filter((application) => application.assigned_officer_id === officer.officerId);
+      const states = assigned.map((application) => syntheticClock(application, asOf).state);
+      return {
+        id: officer.id, officerId: officer.officerId, name: officer.name,
+        departmentId: officer.departmentId, department: officer.department,
+        designation: officer.designation, office: d.name, workload: assigned.length,
+        total: assigned.length, open: assigned.filter((application) => !application.disposedOn).length,
+        late: states.filter((state) => ['BREACHED', 'COMPLETED_LATE'].includes(state)).length,
+        atRisk: states.filter((state) => state === 'AT_RISK').length,
+        onTime: states.filter((state) => state === 'ON_TIME' || state === 'COMPLETED_ON_TIME').length,
+        synthetic: true, demo: true,
+      };
     });
+    const applications=cases.map(a=>{const st=syntheticClock(a,today(req));const person=SYN_CITIZENS.find(c=>c.id===a.citizenId);const officer=safeOfficers.find(o=>o.officerId===a.assigned_officer_id); return {id:a.id,reference:a.reference,applicationReference:a.reference,applicantName:person?.name||'Demo citizen',service:a.service,serviceId:a.serviceId,departmentId:a.departmentId,departmentName:a.department,department:a.department,officeId:a.officeId,receivedOn:a.receivedOn,dueDate:a.dueDate,disposedOn:a.disposedOn,status:st.state,clockState:st.state,daysLate:st.daysLate||0,daysLeft:st.daysLeft??null,reasonCode:a.reasonCode,assigned_officer_id:a.assigned_officer_id,officer,synthetic:true,demo:true};});
+    const reasons={},departmentCounts={[d.name]:{applications:cases.length,delayed:0,atRisk:0}}; for(const a of applications){if(['BREACHED','COMPLETED_LATE'].includes(a.status))departmentCounts[d.name].delayed++;if(a.status==='AT_RISK')departmentCounts[d.name].atRisk++;if(a.reasonCode)reasons[a.reasonCode]=(reasons[a.reasonCode]||0)+1;}
+    const groups={}; for(const a of applications)groups[a.status]=(groups[a.status]||0)+1;
+    res.json({office:{id:d.id,name:d.name,district:d.district,stateCode:d.stateCode,departmentId:d.id,departmentName:d.name,synthetic:true,demo:true},department:{...d},departmentId:d.id,departmentName:d.name,synthetic:true,demo:true,officerCount:safeOfficers.length,officers:safeOfficers,applications,delayedApplications:applications.filter(a=>['BREACHED','COMPLETED_LATE','AT_RISK'].includes(a.status)),statusGroups:groups,departments:departmentCounts,reasonCounts:reasons,privacy:{k:K_ANON,cohortSize:cases.length,referencesMasked:false,citizenNamesExcluded:false,citizenPhonesExcluded:true},contact:{mode:'DEMO_DRAFT_ONLY',sent:false,note:'Mock-only contact action; no message is sent and no live contact details exist.'},asOf});
   }));
 
   // ---- Audit ----
